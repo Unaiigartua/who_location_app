@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:who_location_app/providers/task_provider.dart';
 import 'package:who_location_app/utils/constants.dart';
 import 'package:who_location_app/providers/auth_provider.dart';
-import 'package:flutter/rendering.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:who_location_app/widgets/add_task_dialog.dart';
 
@@ -26,14 +25,8 @@ class _TasksTabState extends State<TasksTab>
   bool get wantKeepAlive => true;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // 当 tab 切换到任务列表时刷新任务
     context.read<TaskProvider>().loadTasks();
   }
 
@@ -67,11 +60,9 @@ class _TasksTabState extends State<TasksTab>
   List<Task> _getFilteredTasks(List<Task> tasks) {
     // Filter tasks based on status and search query.
     return tasks.where((task) {
-      // 状态过滤
       if (_statusFilter != 'all' && task.status != _statusFilter) {
         return false;
       }
-      // 搜索过滤
       if (_searchQuery.isNotEmpty) {
         return task.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
             task.description.toLowerCase().contains(_searchQuery.toLowerCase());
@@ -102,10 +93,24 @@ class _TasksTabState extends State<TasksTab>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(taskProvider.error!),
-                    ElevatedButton(
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Unable to load tasks',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton.icon(
                       onPressed: () => taskProvider.loadTasks(),
-                      child: const Text('Retry'),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Refresh'),
                     ),
                   ],
                 ),
@@ -210,9 +215,9 @@ class _TasksTabState extends State<TasksTab>
                   authProvider.user?.role == AppConstants.roleAmbulance ||
                           authProvider.user?.role == AppConstants.roleAdmin
                       ? FloatingActionButton(
+                          tooltip: 'Add New Task',
                           onPressed: _showAddTaskDialog,
                           child: const Icon(Icons.add_location_alt),
-                          tooltip: 'Add New Task',
                         )
                       : null,
             );
