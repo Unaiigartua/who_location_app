@@ -67,7 +67,3 @@ The project is organized as follows:
    ```sh
    flutter run
    ```
-
----
-
-This README provides a comprehensive overview of the application, covering its project structure, detailed functionalities, business logic, and descriptions of each screen. 
