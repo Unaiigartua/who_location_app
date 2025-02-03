@@ -524,7 +524,7 @@ class _MapTabState extends State<MapTab>
                 tooltip: 'Get Current Location',
               ),
             ),
-            // Add new task button (only displayed for ambulance role)
+            // Add new task button (only displayed for ambulance and admin role)
             Consumer<AuthProvider>(
               builder: (context, authProvider, child) {
                 final userRole = authProvider.user?.role;

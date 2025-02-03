@@ -39,7 +39,10 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
       latitudeController.text = _currentPosition!.latitude.toString();
       longitudeController.text = _currentPosition!.longitude.toString();
     }
-    _fetchAmbulances();
+    final userRole = context.read<AuthProvider>().user?.role;
+    if (userRole == 'admin') {
+      _fetchAmbulances();
+    }
   }
 
   Future<void> _fetchAmbulances() async {
@@ -47,15 +50,22 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
       final taskService = context.read<TaskService>();
       final authProvider = context.read<AuthProvider>();
       final token = await authProvider.getToken();
-      final fetchedAmbulances = await taskService.getUserByRole(token!, 'ambulance');
-      setState(() {
-        ambulances = fetchedAmbulances.map((ambulance) => ambulance['id'].toString()).toList();
-      });
+      final fetchedAmbulances =
+          await taskService.getUserByRole(token!, 'ambulance');
+      if (mounted) {
+        setState(() {
+          ambulances = fetchedAmbulances
+              .map((ambulance) => ambulance['id'].toString())
+              .toList();
+        });
+      }
     } catch (e) {
       debugPrint('Error fetching ambulances: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to load ambulances')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to load ambulances')),
+        );
+      }
     }
   }
 
