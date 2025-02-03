@@ -62,7 +62,8 @@ class _LoginScreenState extends State<LoginScreen> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Your session has expired. Please login again.'),
+                content: Text('Your session has expired. Please log in again.'),
+                duration: Duration(seconds: 3),
               ),
             );
           });

@@ -35,30 +35,78 @@ class DioConfig {
     // Add authentication interceptor to automatically include token in request headers.
     dio.interceptors.add(AuthInterceptor());
 
-    // Global error interceptor handles errors (including 401 Unauthorized).
+    // Global error interceptor
     dio.interceptors.add(
       InterceptorsWrapper(
         onError: (error, handler) async {
+          // Skip error handling for login and register endpoints
+          final String requestPath = error.requestOptions.path;
+          if (requestPath.contains(AppConfig.loginEndpoint) ||
+              requestPath.contains(AppConfig.registerEndpoint)) {
+            return handler.next(error);
+          }
+
+          final context = navigatorKey.currentContext;
+          if (context == null) return handler.next(error);
+
+          // Handle 401 unauthorized error, redirect to login page
           if (error.response?.statusCode == 401) {
-            final String requestPath = error.requestOptions.path;
-            // If the requested URL is not for login or register, call the unauthorized callback.
-            if (!requestPath.contains(AppConfig.loginEndpoint) &&
-                !requestPath.contains(AppConfig.registerEndpoint)) {
-              debugPrint('Handling 401 error globally for path: $requestPath');
-              final context = navigatorKey.currentContext;
-              if (context != null) {
-                final authProvider =
-                    Provider.of<AuthProvider>(context, listen: false);
-                await authProvider.handleUnauthorized();
-              }
-            }
+            debugPrint('Auth error detected: ${error.type}');
+            final authProvider =
+                Provider.of<AuthProvider>(context, listen: false);
+            await authProvider.handleUnauthorized();
             return handler.reject(error);
           }
+
+          // Show error message for all other errors
+          _showErrorMessage(context, error);
           return handler.next(error);
         },
       ),
     );
 
     return dio;
+  }
+
+  // Show error message
+  static void _showErrorMessage(BuildContext context, DioException error) {
+    String message;
+
+    switch (error.type) {
+      case DioExceptionType.connectionTimeout:
+        message = 'Connection timeout, please check your network settings';
+        break;
+      case DioExceptionType.receiveTimeout:
+        message = 'Server response timeout, please try again later';
+        break;
+      case DioExceptionType.connectionError:
+        message =
+            'Unable to connect to server, please check your network connection';
+        break;
+      case DioExceptionType.badResponse:
+        switch (error.response?.statusCode) {
+          case 403:
+            message = 'You do not have permission to access this resource';
+            break;
+          case 404:
+            message = 'The requested resource does not exist';
+            break;
+          case 500:
+            message = 'Internal server error';
+            break;
+          default:
+            message = 'An error occurred: ${error.response?.statusCode}';
+        }
+        break;
+      default:
+        message = 'An unknown error occurred';
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 }

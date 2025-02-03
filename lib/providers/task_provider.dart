@@ -41,36 +41,35 @@ class TaskProvider extends ChangeNotifier {
   }
 
   Future<void> syncTaskUpdates() async {
-    debugPrint('Starting syncTasks call in syncTaskUpdates (version: $_version)');
-    bool hasChanged = false; 
+    debugPrint(
+        'Starting syncTasks call in syncTaskUpdates (version: $_version)');
+    bool hasChanged = false;
     try {
       final data = await _taskApi.syncTasks(currentVersion: _version);
       debugPrint('syncTasks response: $data');
-      
+
       if (data['needs_sync'] == true) {
         final List<dynamic> tasksData = data['tasks'] as List<dynamic>;
         _tasks = tasksData
             .map((json) => Task.fromJson(json as Map<String, dynamic>))
             .toList();
-        _version = data['version']; // Update version with the one returned by the server.
-        debugPrint('Number of tasks synchronized: ${_tasks.length} | New version: $_version');
+        _version = data['version'];
+        debugPrint(
+            'Number of tasks synchronized: ${_tasks.length} | New version: $_version');
         hasChanged = true;
       } else {
         debugPrint('Client version is up-to-date, no changes.');
       }
-      
-      // Notify only if there was a change (or if an error occurred).
+
       if (hasChanged) {
         notifyListeners();
       }
     } catch (e) {
       debugPrint('Synchronization error: $e');
       _error = e.toString();
-      // In case of error, notify so the UI can display the error message.
       notifyListeners();
     }
   }
-
 
   @override
   void dispose() {
@@ -109,7 +108,6 @@ class TaskProvider extends ChangeNotifier {
             .map((json) => Task.fromJson(json as Map<String, dynamic>))
             .toList();
       }
-      _error = null;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -199,7 +197,8 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getUserByRole(String token, [String? role]) async {
+  Future<List<Map<String, dynamic>>> getUserByRole(String token,
+      [String? role]) async {
     try {
       return await _taskService.getUserByRole(token, role);
     } catch (e) {
