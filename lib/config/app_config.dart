@@ -9,7 +9,7 @@ class AppConfig {
   static String get apiBaseUrl {
     switch (environment) {
       case Environment.dev:
-        return 'http://192.168.1.77:5001';
+        return 'http://192.168.1.21:5001';
       case Environment.prod:
         return 'https://your-production-server.com';
     }

@@ -9,8 +9,7 @@ import 'dart:math' as math;
 import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:who_location_app/utils/constants.dart';
 import 'package:geolocator/geolocator.dart';
-import 'dart:async'; // Add this import
-import 'package:flutter/rendering.dart'; // Add this import
+import 'dart:async';
 import 'package:who_location_app/widgets/add_task_dialog.dart';
 
 class MapTab extends StatefulWidget {
@@ -60,22 +59,18 @@ class _MapTabState extends State<MapTab>
 
   // Modify relevant parts in the _fitBounds method
   void _fitBounds(List<Task> tasks) {
-    if (tasks.isEmpty && _currentPosition == null) {
-      // If there are no tasks and no current position, do not change the map view
+    if (tasks.isEmpty) {
+      // If there are no tasks, do not change the map view
       return;
     }
 
-    // Collect task coordinates and current position
+    // Only collect task coordinates
     final points = tasks
         .map((task) => LatLng(
               task.location['latitude']!,
               task.location['longitude']!,
             ))
         .toList();
-
-    if (_currentPosition != null) {
-      points.add(LatLng(_currentPosition!.latitude, _currentPosition!.longitude));
-    }
 
     // Calculate boundaries
     double minLat = points.first.latitude;
@@ -100,7 +95,8 @@ class _MapTabState extends State<MapTab>
     }
 
     // Calculate boundary range
-    final latDelta = math.max(maxLat - minLat, 0.015); // Minimum range is about 1.5 kilometers
+    final latDelta = math.max(
+        maxLat - minLat, 0.015); // Minimum range is about 1.5 kilometers
     final lngDelta = math.max(maxLng - minLng, 0.015);
 
     // Add padding to the boundaries
@@ -254,7 +250,8 @@ class _MapTabState extends State<MapTab>
     _animationController?.dispose();
 
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 700), // Increase duration for smoother transition
+      duration: const Duration(
+          milliseconds: 700), // Increase duration for smoother transition
       vsync: this,
     );
 
@@ -332,7 +329,8 @@ class _MapTabState extends State<MapTab>
                   if (user?.role == AppConstants.roleAmbulance) {
                     debugPrint(
                         'Selected location: ${point.latitude}, ${point.longitude}');
-                    _showAddTaskDialog(context, point); // Pass the selected location
+                    _showAddTaskDialog(
+                        context, point); // Pass the selected location
                   }
                 },
               ),
@@ -439,7 +437,8 @@ class _MapTabState extends State<MapTab>
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
-                                      _formatStatus(task.status), // Display status
+                                      _formatStatus(
+                                          task.status), // Display status
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 10,
@@ -529,7 +528,8 @@ class _MapTabState extends State<MapTab>
             Consumer<AuthProvider>(
               builder: (context, authProvider, child) {
                 final userRole = authProvider.user?.role;
-                if (userRole == AppConstants.roleAmbulance || userRole == AppConstants.roleAdmin) {
+                if (userRole == AppConstants.roleAmbulance ||
+                    userRole == AppConstants.roleAdmin) {
                   return Positioned(
                     bottom: 16,
                     right: 16,
@@ -588,13 +588,17 @@ class _MapTabState extends State<MapTab>
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'new':
-        return Colors.red; // New tasks are represented in red to indicate urgency
+        return Colors
+            .red; // New tasks are represented in red to indicate urgency
       case 'in_progress':
-        return Colors.amber; // In progress is represented in amber to indicate processing
+        return Colors
+            .amber; // In progress is represented in amber to indicate processing
       case 'issue_reported':
-        return Colors.deepOrange; // Issues are represented in deep orange to indicate warning
+        return Colors
+            .deepOrange; // Issues are represented in deep orange to indicate warning
       case 'completed':
-        return Colors.green; // Completed is represented in green to indicate safety
+        return Colors
+            .green; // Completed is represented in green to indicate safety
       default:
         return Colors.grey;
     }

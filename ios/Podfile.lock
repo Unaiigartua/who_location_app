@@ -41,11 +41,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
-  geolocator_apple: 9bcea1918ff7f0062d98345d238ae12718acfbc1
+  flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
+  geolocator_apple: 1560c3c875af2a412242c7a923e15d0d401966ff
   GoogleMaps: 20d7b12be49a14287f797e88e0e31bc4156aaeb4
-  open_file_ios: 461db5853723763573e140de3193656f91990d9e
-  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  open_file_ios: 5ff7526df64e4394b4fe207636b67a95e83078bb
+  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
 
 PODFILE CHECKSUM: 20d8950648d7d6b23d52f672cd7c46c59c256ee1
 
