@@ -18,7 +18,7 @@ class AppConfig {
   static String get wsBaseUrl {
     switch (environment) {
       case Environment.dev:
-        return 'ws://192.168.1.77:5001';
+        return 'ws://192.168.1.21:5001';
       case Environment.prod:
         return 'wss://your-production-server.com';
     }

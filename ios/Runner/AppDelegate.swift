@@ -1,6 +1,9 @@
-import Flutter
 import UIKit
-import GoogleMaps
+
+import Flutter
+
+//added by Kornel
+import flutter_local_notifications
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -8,8 +11,20 @@ import GoogleMaps
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GMSServices.provideAPIKey("你的_Google_Maps_API_Key")
+
+    //added by Kornel
+      FlutterLocalNotificationsPlugin.setPluginRegistrantCallback{ (registry) in GeneratedPluginRegistrant.register(with: registry) }
+
     GeneratedPluginRegistrant.register(with: self)
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+
+    UNUserNotificationCenter.current().delegate = self
+
+    return true
   }
+
+    // Delegate method to handle foreground notification
+    override func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.alert, .sound, .badge]) // Modify this based on your needs
+    }
+
 }

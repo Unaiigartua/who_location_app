@@ -6,6 +6,7 @@ import 'package:who_location_app/screens/home/tasks_tab.dart';
 import 'package:who_location_app/screens/home/profile_tab.dart';
 import 'package:who_location_app/services/websocket_service.dart';
 import 'package:who_location_app/utils/token_storage.dart';
+import 'package:who_location_app/services/notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,7 +29,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeNotifications();
     _initializeWebSocket();
+  }
+
+  Future<void> _initializeNotifications() async {
+    await NotificationService.instance.initialize();
   }
 
   void _initializeWebSocket() async {
@@ -37,25 +43,23 @@ class _HomeScreenState extends State<HomeScreen> {
       _wsService.connect(
         token,
         onNotificationReceived: (data) {
-          // Get the current user ID through AuthProvider
+          if (!mounted) return;
+
           final currentUserId = context.read<AuthProvider>().user?.id;
           if (currentUserId != null &&
               (data['notification']['users'] as List).contains(currentUserId)) {
-            if (mounted) {
-              showDialog(
-                context: context,
-                builder: (_) => AlertDialog(
-                  title: const Text('Notification'),
-                  content: Text(data['notification']['message']),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('OK'),
-                    ),
-                  ],
-                ),
-              );
-            }
+            final notificationType = data['notification']['type'] ?? 'update';
+            final title = switch (notificationType) {
+              'new_task' => 'New Task Assigned',
+              'status_change' => 'Task Status Updated',
+              'assignment' => 'Task Assignment Changed',
+              _ => 'Task Update'
+            };
+
+            NotificationService.instance.showNotification(
+              title,
+              data['notification']['message'],
+            );
           }
         },
       );

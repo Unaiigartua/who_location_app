@@ -95,9 +95,14 @@ class TaskProvider extends ChangeNotifier {
 
     if (_isLoading) return;
 
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+    // 将状态更新包装在 scheduleMicrotask 中
+    scheduleMicrotask(() {
+      if (!_isLoading) {
+        _isLoading = true;
+        _error = null;
+        notifyListeners();
+      }
+    });
 
     try {
       final data = await _taskApi.syncTasks();
@@ -107,11 +112,18 @@ class TaskProvider extends ChangeNotifier {
             .map((json) => Task.fromJson(json as Map<String, dynamic>))
             .toList();
       }
+
+      // 将最终的状态更新也包装在 scheduleMicrotask 中
+      scheduleMicrotask(() {
+        _isLoading = false;
+        notifyListeners();
+      });
     } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      scheduleMicrotask(() {
+        _error = e.toString();
+        _isLoading = false;
+        notifyListeners();
+      });
     }
   }
 

@@ -6,12 +6,14 @@ import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:who_location_app/providers/task_provider.dart';
 import 'package:who_location_app/services/task_service.dart';
 import 'package:dio/dio.dart';
+import 'package:who_location_app/services/notification_service.dart';
 
 /*
 Entry point of the application, setting up the environment and running the app.
 */
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.instance.initialize();
 
   // Set up the environment for development.
   AppConfig.environment = Environment.dev;
@@ -42,7 +44,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp.router(
-          // No es necesario definir navigatorKey aquí ya que goRouter lo configura internamente.
+        // No es necesario definir navigatorKey aquí ya que goRouter lo configura internamente.
         title: 'WHO Location Client',
         theme: ThemeData(
           primarySwatch: Colors.blue,
