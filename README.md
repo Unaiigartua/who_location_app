@@ -1,5 +1,7 @@
 # WHO Location Client
 
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue.svg)](https://github.com/Unaiigartua/who_location_app)
+
 ## Description
 
 "WHO Location Client" is a Flutter application designed for real-time management of reports, tasks, and users. The app connects to a server via WebSocket to receive live updates and offers full functionalities such as creating, editing, and deleting tasks; generating and downloading reports; and managing users with different roles. Additionally, it integrates geolocation to assign tasks based on location and synchronize data with the server.
