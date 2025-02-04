@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:who_location_app/config/app_config.dart';
-import 'package:who_location_app/utils/token_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:who_location_app/config/auth_interceptor.dart';
 import 'package:provider/provider.dart';

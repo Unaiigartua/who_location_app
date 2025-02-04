@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:who_location_app/screens/auth/register_screen.dart';
 import 'package:who_location_app/widgets/common/custom_button.dart';
 import 'package:provider/provider.dart';
 import 'package:who_location_app/providers/auth_provider.dart';
-import 'package:who_location_app/screens/home/home_screen.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/foundation.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:who_location_app/utils/token_storage.dart';
-import 'package:who_location_app/services/websocket_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

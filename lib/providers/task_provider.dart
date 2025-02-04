@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:who_location_app/api/task_api.dart';
 import 'package:who_location_app/models/task.dart';
 import 'package:who_location_app/services/task_service.dart';

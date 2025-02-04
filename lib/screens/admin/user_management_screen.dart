@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:who_location_app/services/task_service.dart';
 import 'package:who_location_app/api/user_api.dart';
-import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'package:who_location_app/screens/admin/admin_register_screen.dart';
 

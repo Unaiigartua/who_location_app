@@ -6,7 +6,6 @@ import 'package:who_location_app/utils/token_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:who_location_app/services/navigation_service.dart';
 import 'package:who_location_app/providers/task_provider.dart';
-import 'package:who_location_app/screens/home/task_detail_screen.dart';
 import 'package:who_location_app/services/websocket_service.dart';
 
 class AuthProvider extends ChangeNotifier {

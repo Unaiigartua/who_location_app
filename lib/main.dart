@@ -4,10 +4,7 @@ import 'package:who_location_app/config/app_config.dart';
 import 'package:who_location_app/config/routes.dart';
 import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:who_location_app/providers/task_provider.dart';
-import 'package:who_location_app/api/task_api.dart';
-import 'package:who_location_app/screens/home/home_screen.dart';
 import 'package:who_location_app/services/task_service.dart';
-import 'package:who_location_app/services/navigation_service.dart';
 import 'package:dio/dio.dart';
 
 /*
