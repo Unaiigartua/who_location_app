@@ -228,7 +228,6 @@ class _ReportScreenState extends State<ReportScreen> {
         centerTitle: true,
         title: const Text(
           "Reports",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         actions: [
           IconButton(

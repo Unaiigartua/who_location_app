@@ -4,7 +4,6 @@ import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:who_location_app/screens/home/map_tab.dart';
 import 'package:who_location_app/screens/home/tasks_tab.dart';
 import 'package:who_location_app/screens/home/profile_tab.dart';
-import 'package:go_router/go_router.dart';
 import 'package:who_location_app/services/websocket_service.dart';
 import 'package:who_location_app/utils/token_storage.dart';
 
@@ -40,7 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
         onNotificationReceived: (data) {
           // Get the current user ID through AuthProvider
           final currentUserId = context.read<AuthProvider>().user?.id;
-          if (currentUserId != null && (data['notification']['users'] as List).contains(currentUserId)) {
+          if (currentUserId != null &&
+              (data['notification']['users'] as List).contains(currentUserId)) {
             if (mounted) {
               showDialog(
                 context: context,
@@ -86,9 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
       body: SafeArea(
         child: PageView(
           controller: _pageController,

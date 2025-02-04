@@ -16,7 +16,8 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
   String _searchQuery = '';
   String _statusFilter = 'all';
 
-  List<Task> _getFilteredTasks(List<Task> tasks, String? userRole, int? userId) {
+  List<Task> _getFilteredTasks(
+      List<Task> tasks, String? userRole, int? userId) {
     // Filter tasks based on user role, status, and search query.
     return tasks.where((task) {
       // Filter by user role first.
@@ -75,7 +76,13 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Tasks'),
+        title: Consumer<AuthProvider>(
+          builder: (context, authProvider, child) {
+            return Text(
+              authProvider.user?.role == 'admin' ? 'All Tasks' : 'My Tasks',
+            );
+          },
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: () => context.read<TaskProvider>().loadTasks(),
@@ -153,7 +160,8 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
                               trailing: Chip(
                                 label: Text(_formatStatus(task.status)),
                                 backgroundColor: _getStatusColor(task.status),
-                                labelStyle: const TextStyle(color: Colors.white),
+                                labelStyle:
+                                    const TextStyle(color: Colors.white),
                               ),
                               onTap: () => context.go('/tasks/${task.id}'),
                             ),
@@ -182,4 +190,4 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
         return Colors.grey;
     }
   }
-} 
+}
