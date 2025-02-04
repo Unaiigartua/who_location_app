@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Text(
-                      'WHO Location App',
+                      'WHO Location',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,

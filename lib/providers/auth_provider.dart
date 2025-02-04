@@ -137,7 +137,8 @@ class AuthProvider extends ChangeNotifier {
     return await TokenStorage.getToken();
   }
 
-  Future<bool> registerUser(String username, String password, String role) async {
+  Future<bool> registerUser(
+      String username, String password, String role) async {
     try {
       debugPrint('AuthProvider: Registering user without login');
       final user = await _authApi.register(username, password, role);
@@ -151,4 +152,3 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 }
-

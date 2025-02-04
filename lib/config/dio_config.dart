@@ -17,19 +17,19 @@ class DioConfig {
       ),
     );
 
-    // Add logging interceptor: logs request and response details if logging is enabled to aid debugging.
-    if (AppConfig.enableLogging) {
-      dio.interceptors.add(LogInterceptor(
-        requestHeader: true,
-        requestBody: true,
-        responseHeader: true,
-        responseBody: true,
-        error: true,
-        logPrint: (object) {
-          debugPrint('DIO LOG: $object');
-        },
-      ));
-    }
+    // // Add logging interceptor: logs request and response details if logging is enabled to aid debugging.
+    // if (AppConfig.enableLogging) {
+    //   dio.interceptors.add(LogInterceptor(
+    //     requestHeader: true,
+    //     requestBody: true,
+    //     responseHeader: true,
+    //     responseBody: true,
+    //     error: true,
+    //     logPrint: (object) {
+    //       debugPrint('DIO LOG: $object');
+    //     },
+    //   ));
+    // }
 
     // Add authentication interceptor to automatically include token in request headers.
     dio.interceptors.add(AuthInterceptor());
