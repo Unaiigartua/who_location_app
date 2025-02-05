@@ -33,6 +33,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Task #${widget.taskId}'),
+        centerTitle: true,
       ),
       body: Consumer<TaskProvider>(
         builder: (context, taskProvider, child) {
@@ -172,7 +173,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Widget _buildAddNoteButton() {
     return ElevatedButton(
       onPressed: _showAddNoteDialog,
-      child: Text('Add Note'),
+      child: const Text('Add Note'),
     );
   }
 
@@ -180,21 +181,21 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return ElevatedButton(
       onPressed: () =>
           _showChangeStatusDialog(context.read<TaskProvider>().currentTask!),
-      child: Text('Change Status'),
+      child: const Text('Change Status'),
     );
   }
 
   Widget _buildHandleButton(Task task) {
     return ElevatedButton(
       onPressed: () => _showHandleDialog(task),
-      child: Text('Handle'),
+      child: const Text('Handle'),
     );
   }
 
   Widget _buildEditTaskButton(Task task) {
     return ElevatedButton(
       onPressed: () => _showEditTaskDialog(task),
-      child: Text('Edit Task'),
+      child: const Text('Edit Task'),
     );
   }
 
@@ -244,22 +245,22 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Add Note'),
+          title: const Text('Add Note'),
           content: TextField(
-            decoration: InputDecoration(hintText: 'Enter your note here'),
+            decoration: const InputDecoration(hintText: 'Enter your note here'),
             onChanged: (value) {
               note = value;
             },
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Add'),
+              child: const Text('Add'),
               onPressed: () async {
                 if (token != null) {
                   await context.read<TaskProvider>().updateTask(
@@ -297,7 +298,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Change Status'),
+              title: const Text('Change Status'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -318,7 +319,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   ),
                   TextField(
                     decoration:
-                        InputDecoration(hintText: 'Enter your note here'),
+                        const InputDecoration(hintText: 'Enter your note here'),
                     onChanged: (value) {
                       note = value;
                     },
@@ -327,13 +328,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Cancel'),
+                  child: const Text('Cancel'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Change'),
+                  child: const Text('Change'),
                   onPressed: () async {
                     if (newStatus != null && token != null) {
                       await context.read<TaskProvider>().updateTask(
@@ -366,22 +367,22 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Handle Task'),
+          title: const Text('Handle Task'),
           content: TextField(
-            decoration: InputDecoration(hintText: 'Enter your note here'),
+            decoration: const InputDecoration(hintText: 'Enter your note here'),
             onChanged: (value) {
               note = value;
             },
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Handle'),
+              child: const Text('Handle'),
               onPressed: () async {
                 if (token != null) {
                   if (task.status == 'issue_reported') {

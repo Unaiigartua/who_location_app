@@ -20,8 +20,8 @@ class AddTaskDialog extends StatefulWidget {
 }
 
 class _AddTaskDialogState extends State<AddTaskDialog> {
-  final titleController = TextEditingController();
-  final descriptionController = TextEditingController();
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
   final latitudeController = TextEditingController();
   final longitudeController = TextEditingController();
   String? selectedAmbulance;
@@ -42,6 +42,27 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
     if (userRole == 'admin') {
       _fetchAmbulances();
     }
+    // Generate default title and description
+    final now = DateTime.now();
+    final dateStr =
+        '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+    final timeStr =
+        '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
+
+    final lat =
+        widget.initialPosition?.latitude.toStringAsFixed(4) ?? 'Unknown';
+    final lng =
+        widget.initialPosition?.longitude.toStringAsFixed(4) ?? 'Unknown';
+
+    _titleController = TextEditingController(
+      text: 'Task-$dateStr-$timeStr',
+    );
+
+    _descriptionController = TextEditingController(
+      text: 'Emergency response required at location ($lat, $lng).\n'
+          'Time: ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}\n'
+          'Date: ${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}',
+    );
   }
 
   Future<void> _fetchAmbulances() async {
@@ -108,7 +129,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   }
 
   Future<void> _handleSubmit() async {
-    if (titleController.text.isEmpty) {
+    if (_titleController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a title')),
       );
@@ -140,12 +161,12 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
           : double.parse(longitudeController.text);
 
       final success = await context.read<TaskProvider>().createTask(
-            title: titleController.text,
+            title: _titleController.text,
             latitude: latitude,
             longitude: longitude,
-            description: descriptionController.text.isEmpty
+            description: _descriptionController.text.isEmpty
                 ? null
-                : descriptionController.text,
+                : _descriptionController.text,
             assignedTo: selectedAmbulance,
           );
 
@@ -335,7 +356,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
             ],
             const SizedBox(height: 16),
             TextField(
-              controller: titleController,
+              controller: _titleController,
               decoration: const InputDecoration(
                 labelText: 'Title',
                 border: OutlineInputBorder(),
@@ -343,7 +364,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
             ),
             const SizedBox(height: 16),
             TextField(
-              controller: descriptionController,
+              controller: _descriptionController,
               decoration: const InputDecoration(
                 labelText: 'Description',
                 border: OutlineInputBorder(),
@@ -368,8 +389,8 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
 
   @override
   void dispose() {
-    titleController.dispose();
-    descriptionController.dispose();
+    _titleController.dispose();
+    _descriptionController.dispose();
     latitudeController.dispose();
     longitudeController.dispose();
     super.dispose();

@@ -55,7 +55,14 @@ class _LoginScreenState extends State<LoginScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Sever settings'),
+        title: const Center(
+          child: Text(
+            'Server Settings',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -127,6 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Login'),
+            centerTitle: true,
             actions: [
               IconButton(
                 icon: const Icon(Icons.settings),

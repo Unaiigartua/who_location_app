@@ -16,6 +16,15 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
   String _searchQuery = '';
   String _statusFilter = 'all';
 
+  @override
+  void initState() {
+    super.initState();
+    // Only load data once when initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TaskProvider>().loadTasks();
+    });
+  }
+
   List<Task> _getFilteredTasks(
       List<Task> tasks, String? userRole, int? userId) {
     // Filter tasks based on user role, status, and search query.
@@ -67,6 +76,18 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
     }
   }
 
+  void _onFilterChanged(String value) async {
+    // Load new data first
+    await context.read<TaskProvider>().loadTasks();
+
+    // After data is loaded, update the filter state
+    if (mounted) {
+      setState(() {
+        _statusFilter = value;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Build the UI for the task history screen, including task list and filters.
@@ -83,6 +104,7 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
             );
           },
         ),
+        centerTitle: true,
       ),
       body: RefreshIndicator(
         onRefresh: () => context.read<TaskProvider>().loadTasks(),
@@ -111,11 +133,7 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
                       ),
                       PopupMenuButton<String>(
                         icon: const Icon(Icons.filter_list),
-                        onSelected: (value) {
-                          setState(() {
-                            _statusFilter = value;
-                          });
-                        },
+                        onSelected: _onFilterChanged,
                         itemBuilder: (context) => [
                           const PopupMenuItem(
                             value: 'all',

@@ -39,6 +39,7 @@ class _AccountTabState extends State<AccountTab>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Account'),
+        centerTitle: true,
         automaticallyImplyLeading: false,
         actions: [
           IconButton(

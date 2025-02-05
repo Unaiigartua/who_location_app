@@ -62,6 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Register'),
+        centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(

@@ -493,20 +493,26 @@ class _MapTabState extends State<MapTab>
                         child: Text('Closed'),
                       ),
                     ],
-                    onChanged: (value) {
+                    onChanged: (value) async {
                       if (value != null) {
-                        setState(() {
-                          _statusFilter = value;
-                        });
-                        // Delay one frame to ensure marker list is updated
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          final filteredTasks = value == 'all'
-                              ? tasks
-                              : tasks
-                                  .where((task) => task.status == value)
-                                  .toList();
-                          _fitBounds(filteredTasks);
-                        });
+                        // Load new data first
+                        await context.read<TaskProvider>().loadTasks();
+
+                        // After data is loaded, update the filter state
+                        if (mounted) {
+                          setState(() {
+                            _statusFilter = value;
+                          });
+                          // Delay one frame to ensure marker list is updated
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            final filteredTasks = value == 'all'
+                                ? tasks
+                                : tasks
+                                    .where((task) => task.status == value)
+                                    .toList();
+                            _fitBounds(filteredTasks);
+                          });
+                        }
                       }
                     },
                   ),

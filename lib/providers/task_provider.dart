@@ -45,7 +45,6 @@ class TaskProvider extends ChangeNotifier {
     bool hasChanged = false;
     try {
       final data = await _taskApi.syncTasks(currentVersion: _version);
-      debugPrint('syncTasks response: $data');
 
       if (data['needs_sync'] == true) {
         final List<dynamic> tasksData = data['tasks'] as List<dynamic>;

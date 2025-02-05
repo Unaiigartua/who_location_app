@@ -147,10 +147,18 @@ class _TasksTabState extends State<TasksTab>
                               ),
                               PopupMenuButton<String>(
                                 icon: const Icon(Icons.filter_list),
-                                onSelected: (value) {
-                                  setState(() {
-                                    _statusFilter = value;
-                                  });
+                                onSelected: (value) async {
+                                  // Load new data first
+                                  await context
+                                      .read<TaskProvider>()
+                                      .loadTasks();
+
+                                  // After data is loaded, update the filter state
+                                  if (mounted) {
+                                    setState(() {
+                                      _statusFilter = value;
+                                    });
+                                  }
                                 },
                                 itemBuilder: (context) => [
                                   const PopupMenuItem(
