@@ -3,6 +3,7 @@ import 'package:who_location_app/widgets/common/custom_button.dart';
 import 'package:provider/provider.dart';
 import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:who_location_app/config/app_config.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,10 +20,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       debugPrint('Login button pressed, starting login process.');
-      final success = await context.read<AuthProvider>().login(
-            _usernameController.text,
-            _passwordController.text,
-          );
+      final success = await context
+          .read<AuthProvider>()
+          .login(_usernameController.text, _passwordController.text);
 
       if (success && mounted) {
         debugPrint('User login successful, navigating to home screen.');
@@ -38,6 +38,67 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     }
+  }
+
+  void _showServerSettingsDialog() {
+    final currentUrl = AppConfig.apiBaseUrl;
+    final urlPattern = RegExp(r'https?://([^:/]+):(\d+)');
+    final match = urlPattern.firstMatch(currentUrl);
+
+    final TextEditingController ipController = TextEditingController(
+      text: match?.group(1) ?? '192.168.1.21',
+    );
+    final TextEditingController portController = TextEditingController(
+      text: match?.group(2) ?? '5001',
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sever settings'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: ipController,
+              decoration: const InputDecoration(
+                labelText: 'IP address',
+                hintText: 'e.g: 192.168.1.21',
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: portController,
+              decoration: const InputDecoration(
+                labelText: 'Port',
+                hintText: 'e.g: 5001',
+              ),
+              keyboardType: TextInputType.number,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              final ip = ipController.text.trim();
+              final port = portController.text.trim();
+              if (ip.isNotEmpty && port.isNotEmpty) {
+                AppConfig.updateBaseUrls(ip, port);
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Server settings updated')),
+                );
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -64,6 +125,15 @@ class _LoginScreenState extends State<LoginScreen> {
         }
 
         return Scaffold(
+          appBar: AppBar(
+            title: const Text('Login'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: _showServerSettingsDialog,
+              ),
+            ],
+          ),
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(16.0),

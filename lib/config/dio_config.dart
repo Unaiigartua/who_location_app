@@ -7,7 +7,17 @@ import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:who_location_app/services/navigation_service.dart';
 
 class DioConfig {
+  // 添加静态实例变量
+  static Dio? _instance;
+
   static Dio createDio(VoidCallback onUnauthorized) {
+    // 如果实例已存在，只更新 baseUrl
+    if (_instance != null) {
+      _instance!.options.baseUrl = AppConfig.apiBaseUrl;
+      return _instance!;
+    }
+
+    // 否则创建新实例
     final dio = Dio(
       BaseOptions(
         baseUrl: AppConfig.apiBaseUrl,
@@ -17,19 +27,19 @@ class DioConfig {
       ),
     );
 
-    // // Add logging interceptor: logs request and response details if logging is enabled to aid debugging.
-    // if (AppConfig.enableLogging) {
-    //   dio.interceptors.add(LogInterceptor(
-    //     requestHeader: true,
-    //     requestBody: true,
-    //     responseHeader: true,
-    //     responseBody: true,
-    //     error: true,
-    //     logPrint: (object) {
-    //       debugPrint('DIO LOG: $object');
-    //     },
-    //   ));
-    // }
+    // Add logging interceptor: logs request and response details if logging is enabled to aid debugging.
+    if (AppConfig.enableLogging) {
+      dio.interceptors.add(LogInterceptor(
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: true,
+        responseBody: true,
+        error: true,
+        logPrint: (object) {
+          debugPrint('DIO LOG: $object');
+        },
+      ));
+    }
 
     // Add authentication interceptor to automatically include token in request headers.
     dio.interceptors.add(AuthInterceptor());
@@ -64,6 +74,7 @@ class DioConfig {
       ),
     );
 
+    _instance = dio;
     return dio;
   }
 
