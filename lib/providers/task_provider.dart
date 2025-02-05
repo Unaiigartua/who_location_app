@@ -33,7 +33,7 @@ class TaskProvider extends ChangeNotifier {
 
   void _startPeriodicRefresh() {
     debugPrint('Starting periodic refresh every 15 seconds.');
-    _refreshTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+    _refreshTimer = Timer.periodic(const Duration(seconds: 120), (_) {
       debugPrint('Executing task synchronization');
       syncTaskUpdates();
     });
@@ -95,7 +95,6 @@ class TaskProvider extends ChangeNotifier {
 
     if (_isLoading) return;
 
-    // 将状态更新包装在 scheduleMicrotask 中
     scheduleMicrotask(() {
       if (!_isLoading) {
         _isLoading = true;
@@ -113,7 +112,6 @@ class TaskProvider extends ChangeNotifier {
             .toList();
       }
 
-      // 将最终的状态更新也包装在 scheduleMicrotask 中
       scheduleMicrotask(() {
         _isLoading = false;
         notifyListeners();
@@ -138,18 +136,19 @@ class TaskProvider extends ChangeNotifier {
   }
 
   Future<void> loadTaskDetails(String taskId) async {
-    _isLoadingDetails = true;
-    _error = null;
-    notifyListeners();
-
     try {
-      _currentTask = await _taskApi.getTaskById(taskId);
-      _isLoadingDetails = false;
+      _isLoading = true;
+      notifyListeners();
+
+      final details = await _taskApi.getTaskById(taskId);
+      _currentTask = details;
+
+      _isLoading = false;
       notifyListeners();
     } catch (e) {
-      _error = e.toString();
-      _isLoadingDetails = false;
+      _isLoading = false;
       notifyListeners();
+      rethrow;
     }
   }
 

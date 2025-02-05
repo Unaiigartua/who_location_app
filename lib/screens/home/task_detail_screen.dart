@@ -7,7 +7,7 @@ import 'package:who_location_app/providers/auth_provider.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final String taskId;
-  
+
   const TaskDetailScreen({super.key, required this.taskId});
 
   @override
@@ -18,11 +18,14 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _loadTaskDetails();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadTaskDetails();
+    });
   }
 
   Future<void> _loadTaskDetails() async {
-    await context.read<TaskProvider>().loadTaskDetails(widget.taskId);
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    await taskProvider.loadTaskDetails(widget.taskId);
   }
 
   @override
@@ -137,9 +140,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
     if (task.status == 'new') {
       if (userRole == 'ambulance') {
-        return task.assignedTo == userId
-            ? _buildAddNoteButton()
-            : Container();
+        return task.assignedTo == userId ? _buildAddNoteButton() : Container();
       } else if (userRole == 'cleaning_team') {
         return _buildHandleButton(task); // Permitir manejar la tarea
       }
@@ -177,7 +178,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   Widget _buildChangeStatusButton() {
     return ElevatedButton(
-      onPressed: () => _showChangeStatusDialog(context.read<TaskProvider>().currentTask!),
+      onPressed: () =>
+          _showChangeStatusDialog(context.read<TaskProvider>().currentTask!),
       child: Text('Change Status'),
     );
   }
@@ -219,10 +221,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     } else if (status == 'New') {
       return 'new';
     }
-    return status; 
+    return status;
   }
 
-  String _getStringStatus(String status){
+  String _getStringStatus(String status) {
     if (status == 'new') {
       return 'New';
     } else if (status == 'in_progress') {
@@ -261,10 +263,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               onPressed: () async {
                 if (token != null) {
                   await context.read<TaskProvider>().updateTask(
-                    taskId: int.parse(widget.taskId),
-                    token: token,
-                    note: note,
-                  );
+                        taskId: int.parse(widget.taskId),
+                        token: token,
+                        note: note,
+                      );
                 }
                 Navigator.of(context).pop();
               },
@@ -286,7 +288,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     } else if (task.status == 'issue_reported') {
       statusOptions = ['Issue Reported', 'In Progress'];
     } else {
-      statusOptions = ['Closed', 'Issue Reported']; 
+      statusOptions = ['Closed', 'Issue Reported'];
     }
 
     showDialog(
@@ -315,7 +317,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     },
                   ),
                   TextField(
-                    decoration: InputDecoration(hintText: 'Enter your note here'),
+                    decoration:
+                        InputDecoration(hintText: 'Enter your note here'),
                     onChanged: (value) {
                       note = value;
                     },
@@ -334,11 +337,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   onPressed: () async {
                     if (newStatus != null && token != null) {
                       await context.read<TaskProvider>().updateTask(
-                        taskId: int.parse(widget.taskId),
-                        token: token,
-                        status: _getStatusString(newStatus ?? 'in_progress'),
-                        note: note,
-                      );
+                            taskId: int.parse(widget.taskId),
+                            token: token,
+                            status:
+                                _getStatusString(newStatus ?? 'in_progress'),
+                            note: note,
+                          );
                       Navigator.of(context).pop();
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -382,18 +386,18 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 if (token != null) {
                   if (task.status == 'issue_reported') {
                     await context.read<TaskProvider>().updateTask(
-                      taskId: int.parse(widget.taskId),
-                      token: token,
-                      note: note,
-                      status: 'issue_reported',
-                    );
-                  }else{
-                  await context.read<TaskProvider>().updateTask(
-                    taskId: int.parse(widget.taskId),
-                    token: token,
-                    note: note,
-                    status: 'in_progress',
-                  );
+                          taskId: int.parse(widget.taskId),
+                          token: token,
+                          note: note,
+                          status: 'issue_reported',
+                        );
+                  } else {
+                    await context.read<TaskProvider>().updateTask(
+                          taskId: int.parse(widget.taskId),
+                          token: token,
+                          note: note,
+                          status: 'in_progress',
+                        );
                   }
                 }
                 Navigator.of(context).pop();
@@ -415,24 +419,36 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     List<Map<String, dynamic>> ambulanceUsers = [];
     List<Map<String, dynamic>> cleaningTeamUsers = [];
     if (token != null) {
-      ambulanceUsers = await context.read<TaskProvider>().getUserByRole(token, 'ambulance');
-      cleaningTeamUsers = await context.read<TaskProvider>().getUserByRole(token, 'cleaning_team');
+      ambulanceUsers =
+          await context.read<TaskProvider>().getUserByRole(token, 'ambulance');
+      cleaningTeamUsers = await context
+          .read<TaskProvider>()
+          .getUserByRole(token, 'cleaning_team');
     }
     // Convertir a listas de IDs de usuario (string)
-    List<String> ambulanceUserIds = ambulanceUsers.map((user) => user['id'].toString()).toList();
-    List<String> cleaningTeamUserIds = cleaningTeamUsers.map((user) => user['id'].toString()).toList();
+    List<String> ambulanceUserIds =
+        ambulanceUsers.map((user) => user['id'].toString()).toList();
+    List<String> cleaningTeamUserIds =
+        cleaningTeamUsers.map((user) => user['id'].toString()).toList();
 
     // Obtener todos los usuarios para el desplegable
     List<String> userOptions = [...ambulanceUserIds, ...cleaningTeamUserIds];
 
     // Asegurarse de que newStatus esté en las opciones
-    List<String> statusOptions = ['New', 'In Progress', 'Completed', 'Issue Reported'];
+    List<String> statusOptions = [
+      'New',
+      'In Progress',
+      'Completed',
+      'Issue Reported'
+    ];
     if (!statusOptions.contains(newStatus)) {
       statusOptions.add(newStatus!);
     }
 
     // Asegurarse de que newAssignedTo esté en las opciones
-    if (newAssignedTo != null && !ambulanceUserIds.contains(newAssignedTo) && !cleaningTeamUserIds.contains(newAssignedTo)) {
+    if (newAssignedTo != null &&
+        !ambulanceUserIds.contains(newAssignedTo) &&
+        !cleaningTeamUserIds.contains(newAssignedTo)) {
       userOptions.add(newAssignedTo);
     }
     /*
@@ -460,7 +476,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text('Change Status', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('Change Status',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   DropdownButton<String>(
                     value: _getStringStatus(newStatus ?? 'in_progress'),
                     items: statusOptions.map((String value) {
@@ -476,7 +493,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     },
                   ),
                   SizedBox(height: 16),
-                  Text('Assign To', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('Assign To',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   DropdownButton<String>(
                     value: newAssignedTo,
                     items: userOptions.map((String value) {
@@ -493,7 +511,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   ),
                   SizedBox(height: 16),
                   TextField(
-                    decoration: InputDecoration(hintText: 'Enter your note here'),
+                    decoration:
+                        InputDecoration(hintText: 'Enter your note here'),
                     onChanged: (value) {
                       note = value;
                     },
@@ -511,28 +530,32 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   child: Text('Save'),
                   onPressed: () async {
                     if (token != null) {
-
-
-                      
                       // Comprobar el rol del usuario asignado
-                      if (newStatus?.toLowerCase() == 'new' && !ambulanceUserIds.contains(newAssignedTo)) {
+                      if (newStatus?.toLowerCase() == 'new' &&
+                          !ambulanceUserIds.contains(newAssignedTo)) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Assigned user must be an Ambulancer for New tasks.')),
+                          SnackBar(
+                              content: Text(
+                                  'Assigned user must be an Ambulancer for New tasks.')),
                         );
                         return;
-                      } else if (newStatus?.toLowerCase() != 'new' && !cleaningTeamUserIds.contains(newAssignedTo)) {
+                      } else if (newStatus?.toLowerCase() != 'new' &&
+                          !cleaningTeamUserIds.contains(newAssignedTo)) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Assigned user must be a Cleaner for non-New tasks.')),
+                          SnackBar(
+                              content: Text(
+                                  'Assigned user must be a Cleaner for non-New tasks.')),
                         );
                         return;
                       }
                       await context.read<TaskProvider>().updateTask(
-                        taskId: int.parse(widget.taskId),
-                        token: token,
-                        status: _getStatusString(newStatus ?? 'in_progress'),
-                        assignedTo: newAssignedTo,
-                        note: note,
-                      );
+                            taskId: int.parse(widget.taskId),
+                            token: token,
+                            status:
+                                _getStatusString(newStatus ?? 'in_progress'),
+                            assignedTo: newAssignedTo,
+                            note: note,
+                          );
                     }
                     Navigator.of(context).pop();
                   },

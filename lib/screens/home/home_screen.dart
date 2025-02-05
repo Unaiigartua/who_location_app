@@ -46,8 +46,14 @@ class _HomeScreenState extends State<HomeScreen> {
           if (!mounted) return;
 
           final currentUserId = context.read<AuthProvider>().user?.id;
-          if (currentUserId != null &&
-              (data['notification']['users'] as List).contains(currentUserId)) {
+          final targetUserId = data['notification']['users'].toString();
+
+          debugPrint('[WS] Current user ID: $currentUserId');
+          debugPrint('[WS] Target user ID: $targetUserId');
+
+          if (currentUserId?.toString() == targetUserId) {
+            debugPrint('[WS] Match found! Showing notification');
+
             final notificationType = data['notification']['type'] ?? 'update';
             final title = switch (notificationType) {
               'new_task' => 'New Task Assigned',
@@ -60,6 +66,8 @@ class _HomeScreenState extends State<HomeScreen> {
               title,
               data['notification']['message'],
             );
+          } else {
+            debugPrint('[WS] No match found. Notification skipped.');
           }
         },
       );

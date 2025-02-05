@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:who_location_app/config/app_config.dart';
+import 'dart:convert';
 
 class WebSocketService {
   static WebSocketService? current;
@@ -9,27 +10,49 @@ class WebSocketService {
   // Service for managing WebSocket connections and handling events.
 
   void connect(String token, {void Function(dynamic)? onNotificationReceived}) {
-    // Connect to the WebSocket server using the provided token.
-    socket = io.io(AppConfig.wsBaseUrl, <String, dynamic>{
+    socket = io.io(AppConfig.wsBaseUrl, {
       'transports': ['websocket'],
       'auth': {'token': 'Bearer $token'},
-      'autoConnect': false,
+      'autoConnect': true,
+      'forceNew': true,
     });
+
     WebSocketService.current = this;
-    debugPrint("Connecting to WebSocket server: " + socket.toString());
-    socket.on('connect', (_) {
-      print("Connected to WebSocket server");
+
+    socket.onConnect((_) {
+      debugPrint('[WS] WebSocket Connected');
+      debugPrint('[WS] Socket ID: ${socket.id}');
     });
-    socket.on('task_updates', (data) {
-      print("Task update received: $data");
+
+    socket.onDisconnect((_) {
+      debugPrint('[WS] WebSocket Disconnected');
     });
+
+    socket.onError((error) {
+      debugPrint('[WS] WebSocket Error: $error');
+    });
+
     socket.on('task_notification', (data) {
-      if (onNotificationReceived != null) {
-        onNotificationReceived(data);
+      debugPrint('[WS] Raw notification received: ${_formatData(data)}');
+
+      if (data != null && data is Map<String, dynamic>) {
+        final notification = {
+          'notification': {
+            'message': data['message'],
+            'type': data['type'] ?? 'task_update',
+            'users': data['user_id'],
+          }
+        };
+
+        debugPrint('[WS] Processed notification: ${_formatData(notification)}');
+
+        if (onNotificationReceived != null) {
+          onNotificationReceived(notification);
+        }
+      } else {
+        debugPrint('[WS] Invalid notification format received');
       }
     });
-    socket.on('disconnect', (_) => print("Disconnected from WebSocket server"));
-    socket.connect();
   }
 
   void disconnect() {
@@ -37,6 +60,22 @@ class WebSocketService {
     if (WebSocketService.current == this) {
       WebSocketService.current = null;
     }
-    // Disconnect from the WebSocket server and clear the current instance.
+  }
+
+  void emit(String event, dynamic data) {
+    socket.emit(event, data);
+  }
+
+  void on(String event, Function(dynamic) handler) {
+    socket.on(event, handler);
+  }
+
+  String _formatData(dynamic data) {
+    const encoder = JsonEncoder.withIndent('  ');
+    try {
+      return encoder.convert(data);
+    } catch (e) {
+      return data.toString();
+    }
   }
 }
