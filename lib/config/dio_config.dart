@@ -7,17 +7,17 @@ import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:who_location_app/services/navigation_service.dart';
 
 class DioConfig {
-  // 添加静态实例变量
+  // Add static instance variable
   static Dio? _instance;
 
   static Dio createDio(VoidCallback onUnauthorized) {
-    // 如果实例已存在，只更新 baseUrl
+    // If instance exists, only update baseUrl
     if (_instance != null) {
       _instance!.options.baseUrl = AppConfig.apiBaseUrl;
       return _instance!;
     }
 
-    // 否则创建新实例
+    // Otherwise create new instance
     final dio = Dio(
       BaseOptions(
         baseUrl: AppConfig.apiBaseUrl,

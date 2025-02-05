@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp.router(
-        // No es necesario definir navigatorKey aquí ya que goRouter lo configura internamente.
+        // No need to define navigatorKey here since goRouter configures it internally.
         title: 'WHO Location Client',
         theme: ThemeData(
           primarySwatch: Colors.blue,

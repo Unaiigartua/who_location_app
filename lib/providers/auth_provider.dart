@@ -141,7 +141,7 @@ class AuthProvider extends ChangeNotifier {
       String username, String password, String role) async {
     try {
       debugPrint('AuthProvider: Registering user without login');
-      final user = await _authApi.register(username, password, role);
+      await _authApi.register(username, password, role);
       debugPrint('AuthProvider: User registered successfully');
       return true;
     } catch (e) {

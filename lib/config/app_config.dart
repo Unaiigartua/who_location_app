@@ -9,7 +9,7 @@ enum Environment {
 class AppConfig {
   static Environment environment = Environment.dev;
 
-  // 添加用于存储自定义URL的变量
+  // Add variable to store custom URL
   static String? _customApiBaseUrl;
   static String? _customWsBaseUrl;
 
@@ -37,14 +37,14 @@ class AppConfig {
     }
   }
 
-  // 添加更新URL的方法
+  // Add method to update URLs
   static void updateBaseUrls(String ip, String port) {
     _customApiBaseUrl = 'http://$ip:$port';
     _customWsBaseUrl = 'ws://$ip:$port';
     debugPrint('Updated API URL: $_customApiBaseUrl');
     debugPrint('Updated WS URL: $_customWsBaseUrl');
 
-    // 强制重新创建 Dio 实例
+    // Force recreate Dio instance
     DioConfig.createDio(() {});
   }
 
@@ -60,7 +60,6 @@ class AppConfig {
   static String get downloadReportEndpoint => '/api/reports';
   static String get deleteReportEndpoint => '/api/reports';
   static String get generateReportEndpoint => '/api/generate-report';
-  // 用于调试的配置
   // Debug configuration
   static bool get enableLogging => environment == Environment.dev;
 }
