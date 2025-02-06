@@ -4,6 +4,7 @@ import 'package:who_location_app/providers/task_provider.dart';
 import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:who_location_app/models/task.dart';
 import 'package:go_router/go_router.dart';
+import 'package:who_location_app/utils/helpers.dart';
 
 class TaskHistoryScreen extends StatefulWidget {
   const TaskHistoryScreen({super.key});
@@ -59,19 +60,7 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
   }
 
   String _formatStatus(String status) {
-    // Format the task status for display.
-    switch (status.toLowerCase()) {
-      case 'new':
-        return 'Open';
-      case 'in_progress':
-        return 'Ongoing';
-      case 'issue_reported':
-        return 'Blocked';
-      case 'completed':
-        return 'Closed';
-      default:
-        return status;
-    }
+    return formatStatus(status);
   }
 
   void _onFilterChanged(String value) async {
@@ -92,6 +81,9 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
     final user = context.watch<AuthProvider>().user;
     final tasks = context.watch<TaskProvider>().tasks;
     final filteredTasks = _getFilteredTasks(tasks, user?.role, user?.id);
+
+    // Sort tasks from newest to oldest
+    filteredTasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     return Scaffold(
       appBar: AppBar(
@@ -162,8 +154,31 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
               const SizedBox(height: 8),
               Expanded(
                 child: filteredTasks.isEmpty
-                    ? const Center(
-                        child: Text('No tasks found'),
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.search_off,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'No tasks found',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton.icon(
+                            onPressed: () =>
+                                context.read<TaskProvider>().loadTasks(),
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Refresh'),
+                          ),
+                        ],
                       )
                     : ListView.builder(
                         itemCount: filteredTasks.length,
@@ -171,8 +186,16 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
                           final task = filteredTasks[index];
                           return Card(
                             child: ListTile(
-                              title: Text(task.title),
-                              subtitle: Text(task.description),
+                              title: Text(
+                                task.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle: Text(
+                                task.description,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                               trailing: Chip(
                                 label: Text(_formatStatus(task.status)),
                                 backgroundColor: _getStatusColor(task.status),
@@ -193,17 +216,6 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
   }
 
   Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'new':
-        return Colors.blue;
-      case 'in_progress':
-        return Colors.orange;
-      case 'completed':
-        return Colors.green;
-      case 'issue_reported':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
+    return getStatusColor(status);
   }
 }

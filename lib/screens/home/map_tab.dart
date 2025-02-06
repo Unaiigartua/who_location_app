@@ -11,6 +11,7 @@ import 'package:who_location_app/utils/constants.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'package:who_location_app/widgets/add_task_dialog.dart';
+import 'package:who_location_app/utils/helpers.dart';
 
 class MapTab extends StatefulWidget {
   const MapTab({super.key});
@@ -527,8 +528,8 @@ class _MapTabState extends State<MapTab>
               child: FloatingActionButton(
                 heroTag: 'location',
                 onPressed: _moveToCurrentLocation, // Use new method
-                child: const Icon(Icons.my_location),
                 tooltip: 'Get Current Location',
+                child: const Icon(Icons.my_location),
               ),
             ),
             // Add new task button (only displayed for ambulance and admin role)
@@ -563,8 +564,8 @@ class _MapTabState extends State<MapTab>
                           });
                         }
                       },
-                      child: const Icon(Icons.add_location_alt),
                       tooltip: 'Add Task at Current Location',
+                      child: const Icon(Icons.add_location_alt),
                     ),
                   );
                 }
@@ -578,37 +579,11 @@ class _MapTabState extends State<MapTab>
   }
 
   IconData _getStatusIcon(String status) {
-    switch (status.toLowerCase()) {
-      case 'new':
-        return Icons.local_hospital; // Ambulance new tasks use hospital icon
-      case 'in_progress':
-        return Icons.cleaning_services; // Cleaning teams use cleaning icon
-      case 'issue_reported':
-        return Icons.warning; // Issue reported uses warning icon
-      case 'completed':
-        return Icons.verified; // Completed uses verified icon
-      default:
-        return Icons.help; // Default uses question mark icon
-    }
+    return getStatusIcon(status);
   }
 
   Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'new':
-        return Colors
-            .red; // New tasks are represented in red to indicate urgency
-      case 'in_progress':
-        return Colors
-            .amber; // In progress is represented in amber to indicate processing
-      case 'issue_reported':
-        return Colors
-            .deepOrange; // Issues are represented in deep orange to indicate warning
-      case 'completed':
-        return Colors
-            .green; // Completed is represented in green to indicate safety
-      default:
-        return Colors.grey;
-    }
+    return getStatusColor(status);
   }
 
   // Modify the _showAddTaskDialog method
@@ -644,17 +619,6 @@ class _MapTabState extends State<MapTab>
   }
 
   String _formatStatus(String status) {
-    switch (status.toLowerCase()) {
-      case 'new':
-        return 'Open';
-      case 'in_progress':
-        return 'Ongoing';
-      case 'issue_reported':
-        return 'Blocked';
-      case 'completed':
-        return 'Closed';
-      default:
-        return status;
-    }
+    return formatStatus(status);
   }
 }

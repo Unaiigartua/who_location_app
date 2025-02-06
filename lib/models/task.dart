@@ -12,6 +12,8 @@ class Task {
   final DateTime createdAt;
   final DateTime? updatedAt;
   final List<TaskLog>? logs;
+  final String? assignedToUsername;
+  final String createdByUsername;
 
   Task({
     required this.id,
@@ -25,6 +27,8 @@ class Task {
     required this.createdAt,
     this.updatedAt,
     this.logs,
+    this.assignedToUsername,
+    required this.createdByUsername,
   })  : description = description ?? '',
         historicalAssignees = historicalAssignees ?? [];
 
@@ -51,6 +55,8 @@ class Task {
       logs: json['logs'] != null
           ? (json['logs'] as List).map((log) => TaskLog.fromJson(log)).toList()
           : null,
+      assignedToUsername: json['assigned_to_username'] as String?,
+      createdByUsername: json['created_by_username'] as String,
     );
   }
 }

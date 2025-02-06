@@ -7,6 +7,7 @@ import 'package:who_location_app/utils/constants.dart';
 import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:who_location_app/widgets/add_task_dialog.dart';
+import 'package:who_location_app/utils/helpers.dart';
 
 class TasksTab extends StatefulWidget {
   const TasksTab({super.key});
@@ -119,6 +120,9 @@ class _TasksTabState extends State<TasksTab>
 
             final filteredTasks = _getFilteredTasks(taskProvider.tasks);
 
+            // Sort tasks from newest to oldest
+            filteredTasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
             return Scaffold(
               body: RefreshIndicator(
                 onRefresh: () => taskProvider.loadTasks(),
@@ -190,8 +194,30 @@ class _TasksTabState extends State<TasksTab>
                       const SizedBox(height: 8),
                       Expanded(
                         child: filteredTasks.isEmpty
-                            ? const Center(
-                                child: Text('No tasks found'),
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.search_off,
+                                    size: 64,
+                                    color: Colors.grey,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  const Text(
+                                    'No tasks found',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  ElevatedButton.icon(
+                                    onPressed: () => taskProvider.loadTasks(),
+                                    icon: const Icon(Icons.refresh),
+                                    label: const Text('Refresh'),
+                                  ),
+                                ],
                               )
                             : ListView.builder(
                                 itemCount: filteredTasks.length,
@@ -244,16 +270,7 @@ class _TasksTabState extends State<TasksTab>
   }
 
   Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'new':
-        return Colors.blue;
-      case 'in_progress':
-        return Colors.orange;
-      case 'completed':
-        return Colors.green;
-      default:
-        return Colors.grey;
-    }
+    return getStatusColor(status);
   }
 
   void _showAddTaskDialog() async {
@@ -272,17 +289,6 @@ class _TasksTabState extends State<TasksTab>
   }
 
   String _formatStatus(String status) {
-    switch (status.toLowerCase()) {
-      case 'new':
-        return 'Open';
-      case 'in_progress':
-        return 'Ongoing';
-      case 'issue_reported':
-        return 'Blocked';
-      case 'completed':
-        return 'Closed';
-      default:
-        return status;
-    }
+    return formatStatus(status);
   }
 }

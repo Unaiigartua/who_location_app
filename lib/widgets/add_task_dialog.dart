@@ -202,6 +202,10 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                 ),
         ),
       );
+
+      if (success) {
+        await context.read<TaskProvider>().loadTasks();
+      }
     } catch (e) {
       if (!mounted) return;
       Navigator.pop(context); // Close loading dialog

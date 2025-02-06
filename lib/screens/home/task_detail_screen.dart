@@ -4,6 +4,7 @@ import 'package:who_location_app/providers/task_provider.dart';
 import 'package:who_location_app/models/task.dart';
 import 'package:intl/intl.dart';
 import 'package:who_location_app/providers/auth_provider.dart';
+import 'package:who_location_app/utils/helpers.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final String taskId;
@@ -74,6 +75,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   Widget _buildTaskInfo(Task task) {
     return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -84,27 +89,50 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
+                color: Colors.black87,
               ),
             ),
-            const SizedBox(height: 8),
-            Text(task.description),
+            const Divider(height: 24, thickness: 1.5),
+            Text(
+              task.description,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+              ),
+            ),
             const SizedBox(height: 16),
             Row(
               children: [
                 Chip(
-                  label: Text(task.status),
+                  label: Text(_formatStatus(task.status)),
                   backgroundColor: _getStatusColor(task.status),
                   labelStyle: const TextStyle(color: Colors.white),
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Created: ${DateFormat.yMMMd().format(task.createdAt)}',
-                  style: Theme.of(context).textTheme.bodySmall,
+                  'Created: ${DateFormat.yMMMd().add_Hm().format(task.createdAt)}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.black54,
+                      ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text('Assigned to: ${task.assignedTo}'),
+            ExpansionTile(
+              title: const Text('Details',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              childrenPadding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              expandedCrossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDetailRow('Created by', task.createdByUsername),
+                _buildDetailRow(
+                    'Assigned to', task.assignedToUsername ?? 'Unassigned'),
+                if (task.updatedAt != null)
+                  _buildDetailRow('Updated',
+                      DateFormat.yMMMd().add_Hm().format(task.updatedAt!)),
+              ],
+            ),
           ],
         ),
       ),
@@ -200,16 +228,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   }
 
   Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'new':
-        return Colors.blue;
-      case 'in_progress':
-        return Colors.orange;
-      case 'completed':
-        return Colors.green;
-      default:
-        return Colors.grey;
-    }
+    return getStatusColor(status);
   }
 
   String _getStatusString(String status) {
@@ -452,20 +471,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         !cleaningTeamUserIds.contains(newAssignedTo)) {
       userOptions.add(newAssignedTo);
     }
-    /*
-    // Comprobar el rol del usuario asignado
-    if (newStatus == 'new' && !ambulanceUsers.contains(newAssignedTo)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Assigned user must be an Ambulancer for New tasks.')),
-      );
-      return;
-    } else if (newStatus != 'new' && !cleaningTeamUsers.contains(newAssignedTo)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Assigned user must be a Cleaner for non-New tasks.')),
-      );
-      return;
-    }
-    */
 
     showDialog(
       context: context,
@@ -567,5 +572,34 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         );
       },
     );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('$label: ',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              )),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(value,
+                  style: const TextStyle(
+                    color: Colors.black54,
+                  )),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatStatus(String status) {
+    return formatStatus(status);
   }
 }
