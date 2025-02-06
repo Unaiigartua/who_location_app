@@ -8,6 +8,7 @@ import 'package:who_location_app/dialogs/add_note_dialog.dart';
 import 'package:who_location_app/dialogs/handle_task_dialog.dart';
 import 'package:who_location_app/dialogs/report_issues_dialog.dart';
 import 'package:who_location_app/dialogs/edit_task_dialog.dart';
+import 'package:who_location_app/dialogs/complete_task_dialog.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final String taskId;
@@ -42,7 +43,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context, true); // When returning, pass true to refresh
+            Navigator.pop(
+                context, true); // When returning, pass true to refresh
           },
         ),
       ),
@@ -127,7 +129,39 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 children: [
                   _buildAddNoteButton(task),
                   const SizedBox(width: 8),
-                  _buildReportIssuesButton(task),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final action = await showDialog<String>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Center(
+                            child: Text('Task Options'),
+                          ),
+                          content:
+                              const Text('What would you like to do next?'),
+                          actions: [
+                            ElevatedButton(
+                              onPressed: () =>
+                                  Navigator.pop(context, 'complete'),
+                              child: const Text('Mark Complete'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () =>
+                                  Navigator.pop(context, 'report_issue'),
+                              child: const Text('Report Issue'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (action == 'complete') {
+                        showCompleteTaskDialog(context, task, widget.taskId);
+                      } else if (action == 'report_issue') {
+                        showReportIssuesDialog(context, task, widget.taskId);
+                      }
+                    },
+                    child: const Text('Actions'),
+                  ),
                 ],
               )
             : Container();
@@ -166,13 +200,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return ElevatedButton(
       onPressed: () => showHandleTaskDialog(context, task, widget.taskId),
       child: const Text('Handle'),
-    );
-  }
-
-  Widget _buildReportIssuesButton(Task task) {
-    return ElevatedButton(
-      onPressed: () => showReportIssuesDialog(context, task, widget.taskId),
-      child: const Text('Report Issues'),
     );
   }
 
