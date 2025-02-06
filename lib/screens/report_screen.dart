@@ -272,8 +272,9 @@ class _ReportScreenState extends State<ReportScreen> {
                           const SizedBox(width: 8),
                           Container(
                             decoration: BoxDecoration(
-                              color:
-                                  Theme.of(context).colorScheme.surfaceContainerHighest,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
@@ -375,8 +376,10 @@ class _ReportScreenState extends State<ReportScreen> {
                                                     context: context,
                                                     builder: (context) =>
                                                         AlertDialog(
-                                                      title: const Text(
-                                                          'Delete Report'),
+                                                      title: const Center(
+                                                        child: Text(
+                                                            'Delete Report'),
+                                                      ),
                                                       content: Text(
                                                           'Are you sure you want to delete "$filename"?'),
                                                       actions: [
@@ -387,7 +390,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                                           child: const Text(
                                                               'Cancel'),
                                                         ),
-                                                        TextButton(
+                                                        ElevatedButton(
                                                           onPressed: () {
                                                             Navigator.pop(
                                                                 context);
