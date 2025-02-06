@@ -102,7 +102,10 @@ class TaskProvider extends ChangeNotifier {
       }
     });
 
+    debugPrint('loadTasks: Checking authentication status.');
     try {
+      debugPrint('loadTasks: User is authenticated, proceeding to load tasks.');
+      debugPrint('loadTasks: Starting task synchronization.');
       final data = await _taskApi.syncTasks();
       if (data['needs_sync'] == true) {
         final List<dynamic> tasksData = data['tasks'] as List<dynamic>;
@@ -111,11 +114,15 @@ class TaskProvider extends ChangeNotifier {
             .toList();
       }
 
+      debugPrint('loadTasks: Task synchronization completed.');
+
       scheduleMicrotask(() {
         _isLoading = false;
         notifyListeners();
       });
     } catch (e) {
+      debugPrint(
+          'loadTasks: Error occurred during task synchronization: $_error');
       scheduleMicrotask(() {
         _error = e.toString();
         _isLoading = false;

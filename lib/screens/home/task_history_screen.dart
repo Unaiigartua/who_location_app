@@ -33,10 +33,8 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
       bool isUserTask = false;
       switch (userRole) {
         case 'ambulance':
-          isUserTask = task.createdBy == userId;
-          break;
         case 'cleaning_team':
-          isUserTask = task.assignedTo == userId;
+          isUserTask = task.historicalAssignees.contains(userId);
           break;
         case 'admin':
           isUserTask = true;

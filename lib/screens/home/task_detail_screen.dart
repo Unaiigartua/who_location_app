@@ -98,7 +98,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Created: ${DateFormat.yMMMd().format(task.createdAt!)}',
+                  'Created: ${DateFormat.yMMMd().format(task.createdAt)}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
@@ -443,7 +443,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       'Issue Reported'
     ];
     if (!statusOptions.contains(newStatus)) {
-      statusOptions.add(newStatus!);
+      statusOptions.add(newStatus);
     }
 
     // Asegurarse de que newAssignedTo esté en las opciones

@@ -29,6 +29,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   bool useMapSelection = true;
 
   Position? _currentPosition;
+  List<Map<String, dynamic>> _ambulances = [];
 
   @override
   void initState() {
@@ -74,9 +75,9 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
           await taskService.getUserByRole(token!, 'ambulance');
       if (mounted) {
         setState(() {
-          ambulances = fetchedAmbulances
-              .map((ambulance) => ambulance['id'].toString())
-              .toList();
+          _ambulances = fetchedAmbulances;
+          ambulances =
+              _ambulances.map((a) => a['username'].toString()).toList();
         });
       }
     } catch (e) {
@@ -160,6 +161,12 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
           ? _currentPosition!.longitude
           : double.parse(longitudeController.text);
 
+      // 获取选中的救护车的用户ID
+      final selectedAmbulanceId = _ambulances.firstWhere(
+        (ambulance) => ambulance['username'] == selectedAmbulance,
+        orElse: () => {'id': null},
+      )['id'];
+
       final success = await context.read<TaskProvider>().createTask(
             title: _titleController.text,
             latitude: latitude,
@@ -167,7 +174,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
             description: _descriptionController.text.isEmpty
                 ? null
                 : _descriptionController.text,
-            assignedTo: selectedAmbulance,
+            assignedTo: selectedAmbulanceId?.toString(),
           );
 
       if (!mounted) return;
@@ -308,10 +315,10 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
             if (userRole == AppConstants.roleAdmin) ...[
               DropdownButtonFormField<String>(
                 value: selectedAmbulance,
-                items: ambulances.map((ambulanceId) {
+                items: ambulances.map((ambulanceName) {
                   return DropdownMenuItem(
-                    value: ambulanceId,
-                    child: Text(ambulanceId),
+                    value: ambulanceName,
+                    child: Text(ambulanceName),
                   );
                 }).toList(),
                 onChanged: (value) {

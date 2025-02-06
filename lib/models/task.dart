@@ -8,6 +8,7 @@ class Task {
   final Map<String, double> location;
   final int createdBy;
   final int? assignedTo;
+  final List<int> historicalAssignees;
   final DateTime createdAt;
   final DateTime? updatedAt;
   final List<TaskLog>? logs;
@@ -20,10 +21,12 @@ class Task {
     required this.location,
     required this.createdBy,
     this.assignedTo,
+    List<int>? historicalAssignees,
     required this.createdAt,
     this.updatedAt,
     this.logs,
-  }) : description = description ?? '';
+  })  : description = description ?? '',
+        historicalAssignees = historicalAssignees ?? [];
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
@@ -37,15 +40,17 @@ class Task {
       },
       createdBy: json['created_by'] as int,
       assignedTo: json['assigned_to'] as int?,
+      historicalAssignees: (json['historical_assignees'] as List?)
+              ?.map((e) => e as int)
+              .toList() ??
+          [],
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'] as String)
           : null,
       logs: json['logs'] != null
-          ? (json['logs'] as List)
-              .map((log) => TaskLog.fromJson(log))
-              .toList()
+          ? (json['logs'] as List).map((log) => TaskLog.fromJson(log)).toList()
           : null,
     );
   }
-} 
+}

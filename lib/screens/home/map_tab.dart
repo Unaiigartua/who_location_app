@@ -326,7 +326,8 @@ class _MapTabState extends State<MapTab>
                 onLongPress: (tapPosition, point) {
                   // Check user role
                   final user = context.read<AuthProvider>().user;
-                  if (user?.role == AppConstants.roleAmbulance) {
+                  if (user?.role == AppConstants.roleAmbulance ||
+                      user?.role == AppConstants.roleAdmin) {
                     debugPrint(
                         'Selected location: ${point.latitude}, ${point.longitude}');
                     _showAddTaskDialog(

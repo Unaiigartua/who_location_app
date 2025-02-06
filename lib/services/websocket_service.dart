@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:who_location_app/config/app_config.dart';
 import 'dart:convert';
+import 'package:provider/provider.dart';
+import 'package:who_location_app/providers/task_provider.dart';
+import 'package:who_location_app/services/navigation_service.dart';
 
 class WebSocketService {
   static WebSocketService? current;
@@ -33,7 +36,7 @@ class WebSocketService {
     });
 
     socket.on('task_notification', (data) {
-      debugPrint('[WS] Raw notification received: ${_formatData(data)}');
+      // debugPrint('[WS] Raw notification received: ${_formatData(data)}');
 
       if (data != null && data is Map<String, dynamic>) {
         final notification = {
@@ -44,13 +47,17 @@ class WebSocketService {
           }
         };
 
-        debugPrint('[WS] Processed notification: ${_formatData(notification)}');
+        // debugPrint('[WS] Processed notification: ${_formatData(notification)}');
 
         if (onNotificationReceived != null) {
           onNotificationReceived(notification);
+          final context = navigatorKey.currentContext;
+          if (context != null) {
+            context.read<TaskProvider>().loadTasks();
+          }
         }
       } else {
-        debugPrint('[WS] Invalid notification format received');
+        // debugPrint('[WS] Invalid notification format received');
       }
     });
   }
