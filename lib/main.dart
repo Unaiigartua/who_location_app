@@ -25,7 +25,7 @@ void main() async {
 Main application widget that sets up providers and routing.
 */
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

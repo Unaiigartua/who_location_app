@@ -273,7 +273,7 @@ class _ReportScreenState extends State<ReportScreen> {
                           Container(
                             decoration: BoxDecoration(
                               color:
-                                  Theme.of(context).colorScheme.surfaceVariant,
+                                  Theme.of(context).colorScheme.surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(

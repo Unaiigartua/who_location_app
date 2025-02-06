@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:who_location_app/models/task.dart';
 import 'package:intl/intl.dart';
 import 'package:who_location_app/utils/helpers.dart';
+import 'dart:ui' as ui;
 
 // TaskInfoWidget class
 class TaskInfoWidget extends StatelessWidget {
@@ -30,12 +31,60 @@ class TaskInfoWidget extends StatelessWidget {
               ),
             ),
             const Divider(height: 24, thickness: 1.5),
-            Text(
-              task.description,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black54,
-              ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final span = TextSpan(
+                  text: task.description,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black54,
+                  ),
+                );
+                final tp = TextPainter(
+                  text: span,
+                  maxLines: 4,
+                  textDirection: ui.TextDirection.ltr,
+                );
+                tp.layout(maxWidth: constraints.maxWidth);
+
+                final isOverflowing = tp.didExceedMaxLines;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      task.description,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    if (isOverflowing)
+                      TextButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Full Description'),
+                              content: SingleChildScrollView(
+                                child: Text(task.description),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Close'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        child: const Text('Read More'),
+                      ),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 16),
             Row(

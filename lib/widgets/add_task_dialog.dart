@@ -161,7 +161,6 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
           ? _currentPosition!.longitude
           : double.parse(longitudeController.text);
 
-      // 获取选中的救护车的用户ID
       final selectedAmbulanceId = _ambulances.firstWhere(
         (ambulance) => ambulance['username'] == selectedAmbulance,
         orElse: () => {'id': null},
@@ -391,7 +390,12 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: _currentPosition != null ? _handleSubmit : null,
+          onPressed: (selectedAmbulance != null ||
+                      context.read<AuthProvider>().user?.role !=
+                          AppConstants.roleAdmin) &&
+                  _currentPosition != null
+              ? _handleSubmit
+              : null,
           child: const Text('Send'),
         ),
       ],

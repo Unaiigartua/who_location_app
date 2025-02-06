@@ -28,10 +28,10 @@ class UserApi {
         _onUnauthorized();
       }
       debugPrint('Error deleting user: $e');
-      throw e;
+      rethrow;
     } catch (e) {
       debugPrint('Unexpected error in deleteUser: $e');
-      throw e;
+      rethrow;
     }
   }
 }

@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:who_location_app/providers/task_provider.dart';
 import 'package:who_location_app/models/task.dart';
 import 'package:who_location_app/providers/auth_provider.dart';
-import 'package:who_location_app/utils/helpers.dart';
 import 'package:who_location_app/widgets/task_details_widget.dart';
+import 'package:who_location_app/dialogs/add_note_dialog.dart';
+import 'package:who_location_app/dialogs/handle_task_dialog.dart';
+import 'package:who_location_app/dialogs/report_issues_dialog.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final String taskId;
@@ -33,7 +35,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Task #${widget.taskId}'),
+        title: const Text('Task Details'),
         centerTitle: true,
       ),
       body: Consumer<TaskProvider>(
@@ -57,12 +59,18 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   children: [
                     TaskInfoWidget(task: task),
                     const SizedBox(height: 24),
-                    const Text(
-                      'Task History',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Task History',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        _buildActionButton(task),
+                      ],
                     ),
                     const SizedBox(height: 8),
                   ],
@@ -79,7 +87,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              _buildActionButton(task),
             ],
           );
         },
@@ -97,7 +104,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
     if (task.status == 'new') {
       if (userRole == 'ambulance') {
-        return task.assignedTo == userId ? _buildAddNoteButton() : Container();
+        return task.assignedTo == userId 
+            ? _buildAddNoteButton(task) 
+            : Container();
       } else if (userRole == 'cleaning_team') {
         return _buildHandleButton(task); // Permitir manejar la tarea
       }
@@ -106,7 +115,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     if (task.status == 'in_progress') {
       if (userRole == 'cleaning_team') {
         return task.assignedTo == userId
-            ? _buildChangeStatusButton()
+            ? Row(
+                children: [
+                  _buildAddNoteButton(task),
+                  const SizedBox(width: 8),
+                  _buildReportIssuesButton(task),
+                ],
+              )
             : Container();
       }
     }
@@ -114,8 +129,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     if (task.status == 'issue_reported') {
       if (userRole == 'cleaning_team') {
         return task.assignedTo == userId
-            ? _buildChangeStatusButton()
-            : Container();
+            ? _buildAddNoteButton(task)
+            : _buildHandleButton(task);
       }
     }
 
@@ -126,25 +141,24 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return Container(); // Default, no mostrar botón
   }
 
-  Widget _buildAddNoteButton() {
+  Widget _buildAddNoteButton(Task task) {
     return ElevatedButton(
-      onPressed: _showAddNoteDialog,
+      onPressed: () => showAddNoteDialog(context, task, widget.taskId),
       child: const Text('Add Note'),
     );
   }
-
-  Widget _buildChangeStatusButton() {
+    
+  Widget _buildHandleButton(Task task) {
     return ElevatedButton(
-      onPressed: () =>
-          _showChangeStatusDialog(context.read<TaskProvider>().currentTask!),
-      child: const Text('Change Status'),
+      onPressed: () => showHandleTaskDialog(context, task, widget.taskId),
+      child: const Text('Handle'),
     );
   }
 
-  Widget _buildHandleButton(Task task) {
+  Widget _buildReportIssuesButton(Task task) {
     return ElevatedButton(
-      onPressed: () => _showHandleDialog(task),
-      child: const Text('Handle'),
+      onPressed: () => showReportIssuesDialog(context, task, widget.taskId),
+      child: const Text('Report Issues'),
     );
   }
 
@@ -181,177 +195,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return status;
   }
 
-  void _showAddNoteDialog() {
-    String note = '';
-    final token = context.read<AuthProvider>().user?.token;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add Note'),
-          content: TextField(
-            decoration: const InputDecoration(hintText: 'Enter your note here'),
-            onChanged: (value) {
-              note = value;
-            },
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Add'),
-              onPressed: () async {
-                if (token != null) {
-                  await context.read<TaskProvider>().updateTask(
-                        taskId: int.parse(widget.taskId),
-                        token: token,
-                        note: note,
-                      );
-                }
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showChangeStatusDialog(Task task) {
-    String? newStatus;
-    String note = '';
-    final token = context.read<AuthProvider>().user?.token;
-
-    List<String> statusOptions;
-    if (task.status == 'in_progress') {
-      statusOptions = ['In Progress', 'Closed', 'Issue Reported'];
-    } else if (task.status == 'issue_reported') {
-      statusOptions = ['Issue Reported', 'In Progress'];
-    } else {
-      statusOptions = ['Closed', 'Issue Reported'];
-    }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Change Status'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  DropdownButton<String>(
-                    hint: Text('Select Status'),
-                    value: newStatus,
-                    items: statusOptions.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        newStatus = newValue;
-                      });
-                    },
-                  ),
-                  TextField(
-                    decoration:
-                        const InputDecoration(hintText: 'Enter your note here'),
-                    onChanged: (value) {
-                      note = value;
-                    },
-                  ),
-                ],
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: const Text('Change'),
-                  onPressed: () async {
-                    if (newStatus != null && token != null) {
-                      await context.read<TaskProvider>().updateTask(
-                            taskId: int.parse(widget.taskId),
-                            token: token,
-                            status:
-                                _getStatusString(newStatus ?? 'in_progress'),
-                            note: note,
-                          );
-                      Navigator.of(context).pop();
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Please select a status.')),
-                      );
-                    }
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _showHandleDialog(Task task) {
-    String note = '';
-    final token = context.read<AuthProvider>().user?.token;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Handle Task'),
-          content: TextField(
-            decoration: const InputDecoration(hintText: 'Enter your note here'),
-            onChanged: (value) {
-              note = value;
-            },
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Handle'),
-              onPressed: () async {
-                if (token != null) {
-                  if (task.status == 'issue_reported') {
-                    await context.read<TaskProvider>().updateTask(
-                          taskId: int.parse(widget.taskId),
-                          token: token,
-                          note: note,
-                          status: 'issue_reported',
-                        );
-                  } else {
-                    await context.read<TaskProvider>().updateTask(
-                          taskId: int.parse(widget.taskId),
-                          token: token,
-                          note: note,
-                          status: 'in_progress',
-                        );
-                  }
-                }
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   void _showEditTaskDialog(Task task) async {
     String? newStatus = task.status;
@@ -402,11 +245,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Edit Task'),
+              title: const Text('Edit Task'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text('Change Status',
+                  const Text('Change Status',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   DropdownButton<String>(
                     value: _getStringStatus(newStatus ?? 'in_progress'),
@@ -422,8 +265,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       });
                     },
                   ),
-                  SizedBox(height: 16),
-                  Text('Assign To',
+                  const SizedBox(height: 16),
+                  const Text('Assign To',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   DropdownButton<String>(
                     value: newAssignedTo,
@@ -439,10 +282,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       });
                     },
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   TextField(
                     decoration:
-                        InputDecoration(hintText: 'Enter your note here'),
+                        const InputDecoration(hintText: 'Enter your note here'),
                     onChanged: (value) {
                       note = value;
                     },
@@ -451,20 +294,20 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Cancel'),
+                  child: const Text('Cancel'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Save'),
+                  child: const Text('Save'),
                   onPressed: () async {
                     if (token != null) {
                       // Comprobar el rol del usuario asignado
                       if (newStatus?.toLowerCase() == 'new' &&
                           !ambulanceUserIds.contains(newAssignedTo)) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                               content: Text(
                                   'Assigned user must be an Ambulancer for New tasks.')),
                         );
@@ -472,7 +315,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       } else if (newStatus?.toLowerCase() != 'new' &&
                           !cleaningTeamUserIds.contains(newAssignedTo)) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                               content: Text(
                                   'Assigned user must be a Cleaner for non-New tasks.')),
                         );
