@@ -7,6 +7,7 @@ import 'package:who_location_app/widgets/task_details_widget.dart';
 import 'package:who_location_app/dialogs/add_note_dialog.dart';
 import 'package:who_location_app/dialogs/handle_task_dialog.dart';
 import 'package:who_location_app/dialogs/report_issues_dialog.dart';
+import 'package:who_location_app/dialogs/edit_task_dialog.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final String taskId;
@@ -135,7 +136,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     }
 
     if (userRole == 'admin') {
-      return _buildEditTaskButton(task);
+      return Row(
+        children: [
+          _buildAddNoteButton(task),
+          const SizedBox(width: 8),
+          _buildEditTaskButton(task),
+        ],
+      );
     }
 
     return Container(); // Default, no mostrar botón
@@ -164,180 +171,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   Widget _buildEditTaskButton(Task task) {
     return ElevatedButton(
-      onPressed: () => _showEditTaskDialog(task),
+      onPressed: () => showEditTaskDialog(context, task, widget.taskId),
       child: const Text('Edit Task'),
-    );
-  }
-
-  String _getStatusString(String status) {
-    if (status == 'Issue Reported') {
-      return 'issue_reported';
-    } else if (status == 'Closed') {
-      return 'completed';
-    } else if (status == 'In Progress') {
-      return 'in_progress';
-    } else if (status == 'New') {
-      return 'new';
-    }
-    return status;
-  }
-
-  String _getStringStatus(String status) {
-    if (status == 'new') {
-      return 'New';
-    } else if (status == 'in_progress') {
-      return 'In Progress';
-    } else if (status == 'completed') {
-      return 'Completed';
-    } else if (status == 'issue_reported') {
-      return 'Issue Reported';
-    }
-    return status;
-  }
-
-
-  void _showEditTaskDialog(Task task) async {
-    String? newStatus = task.status;
-    String? newAssignedTo = task.assignedTo?.toString();
-    String note = '';
-    final token = context.read<AuthProvider>().user?.token;
-
-    // Obtener usuarios por rol
-    List<Map<String, dynamic>> ambulanceUsers = [];
-    List<Map<String, dynamic>> cleaningTeamUsers = [];
-    if (token != null) {
-      ambulanceUsers =
-          await context.read<TaskProvider>().getUserByRole(token, 'ambulance');
-      cleaningTeamUsers = await context
-          .read<TaskProvider>()
-          .getUserByRole(token, 'cleaning_team');
-    }
-    // Convertir a listas de IDs de usuario (string)
-    List<String> ambulanceUserIds =
-        ambulanceUsers.map((user) => user['id'].toString()).toList();
-    List<String> cleaningTeamUserIds =
-        cleaningTeamUsers.map((user) => user['id'].toString()).toList();
-
-    // Obtener todos los usuarios para el desplegable
-    List<String> userOptions = [...ambulanceUserIds, ...cleaningTeamUserIds];
-
-    // Asegurarse de que newStatus esté en las opciones
-    List<String> statusOptions = [
-      'New',
-      'In Progress',
-      'Completed',
-      'Issue Reported'
-    ];
-    if (!statusOptions.contains(newStatus)) {
-      statusOptions.add(newStatus);
-    }
-
-    // Asegurarse de que newAssignedTo esté en las opciones
-    if (newAssignedTo != null &&
-        !ambulanceUserIds.contains(newAssignedTo) &&
-        !cleaningTeamUserIds.contains(newAssignedTo)) {
-      userOptions.add(newAssignedTo);
-    }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Edit Task'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  const Text('Change Status',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  DropdownButton<String>(
-                    value: _getStringStatus(newStatus ?? 'in_progress'),
-                    items: statusOptions.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        newStatus = newValue;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  const Text('Assign To',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  DropdownButton<String>(
-                    value: newAssignedTo,
-                    items: userOptions.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        newAssignedTo = newValue;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    decoration:
-                        const InputDecoration(hintText: 'Enter your note here'),
-                    onChanged: (value) {
-                      note = value;
-                    },
-                  ),
-                ],
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: const Text('Save'),
-                  onPressed: () async {
-                    if (token != null) {
-                      // Comprobar el rol del usuario asignado
-                      if (newStatus?.toLowerCase() == 'new' &&
-                          !ambulanceUserIds.contains(newAssignedTo)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text(
-                                  'Assigned user must be an Ambulancer for New tasks.')),
-                        );
-                        return;
-                      } else if (newStatus?.toLowerCase() != 'new' &&
-                          !cleaningTeamUserIds.contains(newAssignedTo)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text(
-                                  'Assigned user must be a Cleaner for non-New tasks.')),
-                        );
-                        return;
-                      }
-                      await context.read<TaskProvider>().updateTask(
-                            taskId: int.parse(widget.taskId),
-                            token: token,
-                            status:
-                                _getStatusString(newStatus ?? 'in_progress'),
-                            assignedTo: newAssignedTo,
-                            note: note,
-                          );
-                    }
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      },
     );
   }
 }

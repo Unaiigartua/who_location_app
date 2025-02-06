@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:who_location_app/config/app_config.dart';
-import 'dart:convert';
+// import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:who_location_app/providers/task_provider.dart';
 import 'package:who_location_app/services/navigation_service.dart';
@@ -77,12 +77,12 @@ class WebSocketService {
     socket.on(event, handler);
   }
 
-  String _formatData(dynamic data) {
-    const encoder = JsonEncoder.withIndent('  ');
-    try {
-      return encoder.convert(data);
-    } catch (e) {
-      return data.toString();
-    }
-  }
+  // String _formatData(dynamic data) {
+  //   const encoder = JsonEncoder.withIndent('  ');
+  //   try {
+  //     return encoder.convert(data);
+  //   } catch (e) {
+  //     return data.toString();
+  //   }
+  // }
 }

@@ -53,6 +53,7 @@ void showAddNoteDialog(BuildContext context, Task task, String taskId) {
                             token: token,
                             note: note,
                             status: task.status,
+                            assignedTo: task.assignedTo?.toString(),
                           );
                     }
                     if (!context.mounted) return;
