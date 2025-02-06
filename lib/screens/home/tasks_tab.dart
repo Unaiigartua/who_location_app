@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:who_location_app/models/task.dart';
-import 'package:go_router/go_router.dart';
 import 'package:who_location_app/providers/task_provider.dart';
 import 'package:who_location_app/utils/constants.dart';
 import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:who_location_app/dialogs/add_task_dialog.dart';
 import 'package:who_location_app/utils/helpers.dart';
+import 'package:who_location_app/screens/home/task_detail_screen.dart';
 
 class TasksTab extends StatefulWidget {
   const TasksTab({super.key});
@@ -242,8 +242,23 @@ class _TasksTabState extends State<TasksTab>
                                         labelStyle: const TextStyle(
                                             color: Colors.white),
                                       ),
-                                      onTap: () =>
-                                          context.go('/tasks/${task.id}'),
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                TaskDetailScreen(
+                                                    taskId: task.id.toString()),
+                                          ),
+                                        ).then((result) {
+                                          if (result == true) {
+                                            // If the result is true, refresh the task list
+                                            context
+                                                .read<TaskProvider>()
+                                                .loadTasks();
+                                          }
+                                        });
+                                      },
                                     ),
                                   );
                                 },

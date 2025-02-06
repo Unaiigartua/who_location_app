@@ -30,6 +30,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Future<void> _loadTaskDetails() async {
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
     await taskProvider.loadTaskDetails(widget.taskId);
+    if (!mounted) return; // Make sure the widget is still mounted
   }
 
   @override
@@ -38,6 +39,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       appBar: AppBar(
         title: const Text('Task Details'),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context, true); // When returning, pass true to refresh
+          },
+        ),
       ),
       body: Consumer<TaskProvider>(
         builder: (context, taskProvider, child) {
@@ -105,8 +112,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
     if (task.status == 'new') {
       if (userRole == 'ambulance') {
-        return task.assignedTo == userId 
-            ? _buildAddNoteButton(task) 
+        return task.assignedTo == userId
+            ? _buildAddNoteButton(task)
             : Container();
       } else if (userRole == 'cleaning_team') {
         return _buildHandleButton(task); // Permitir manejar la tarea
@@ -154,7 +161,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       child: const Text('Add Note'),
     );
   }
-    
+
   Widget _buildHandleButton(Task task) {
     return ElevatedButton(
       onPressed: () => showHandleTaskDialog(context, task, widget.taskId),

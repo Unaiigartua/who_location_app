@@ -34,7 +34,7 @@ class TaskProvider extends ChangeNotifier {
 
   void _startPeriodicRefresh() {
     debugPrint('Starting periodic refresh every 15 seconds.');
-    _refreshTimer = Timer.periodic(const Duration(seconds: 120), (_) {
+    _refreshTimer = Timer.periodic(const Duration(seconds: 15), (_) {
       debugPrint('Executing task synchronization');
       syncTaskUpdates();
     });

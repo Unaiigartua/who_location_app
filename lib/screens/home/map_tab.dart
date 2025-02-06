@@ -3,7 +3,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:who_location_app/providers/task_provider.dart';
-import 'package:go_router/go_router.dart';
 import 'package:who_location_app/models/task.dart';
 import 'dart:math' as math;
 import 'package:who_location_app/providers/auth_provider.dart';
@@ -12,6 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'package:who_location_app/dialogs/add_task_dialog.dart';
 import 'package:who_location_app/utils/helpers.dart';
+import 'package:who_location_app/screens/home/task_detail_screen.dart';
 
 class MapTab extends StatefulWidget {
   const MapTab({super.key});
@@ -416,7 +416,20 @@ class _MapTabState extends State<MapTab>
                         width: 120, // Increase width to accommodate more text
                         height: 80,
                         child: GestureDetector(
-                          onTap: () => context.go('/tasks/${task.id}'),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TaskDetailScreen(
+                                    taskId: task.id.toString()),
+                              ),
+                            ).then((result) {
+                              if (result == true) {
+                                // If the result is true, refresh the task list
+                                context.read<TaskProvider>().loadTasks();
+                              }
+                            });
+                          },
                           child: Column(
                             children: [
                               Container(

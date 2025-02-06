@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:who_location_app/providers/task_provider.dart';
 import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:who_location_app/models/task.dart';
-import 'package:go_router/go_router.dart';
 import 'package:who_location_app/utils/helpers.dart';
+import 'package:who_location_app/screens/home/task_detail_screen.dart';
 
 class TaskHistoryScreen extends StatefulWidget {
   const TaskHistoryScreen({super.key});
@@ -198,7 +198,20 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
                                 labelStyle:
                                     const TextStyle(color: Colors.white),
                               ),
-                              onTap: () => context.go('/tasks/${task.id}'),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TaskDetailScreen(
+                                        taskId: task.id.toString()),
+                                  ),
+                                ).then((result) {
+                                  if (result == true) {
+                                    // 如果返回结果为true，刷新任务列表
+                                    context.read<TaskProvider>().loadTasks();
+                                  }
+                                });
+                              },
                             ),
                           );
                         },
