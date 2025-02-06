@@ -50,7 +50,8 @@ The project is organized as follows:
   - **providers/**: State management and business logic (e.g., `auth_provider.dart`, `task_provider.dart`).
   - **screens/**: Definitions of the application's screens (e.g., `home_screen.dart`, `report_screen.dart`, etc.).
   - **services/**: Classes that encapsulate communication with external services (e.g., `websocket_service.dart`, `task_service.dart`, `navigation_service.dart`).
-  - **widgets/**: Reusable UI components (e.g., `custom_button.dart`, `add_task_dialog.dart`).
+  - **widgets/**: Reusable UI components (e.g., `custom_button.dart`).
+  - **dialogs/**: Dialog components (e.g., `add_task_dialog.dart`, `edit_task_dialog.dart`).
 
 ## Installation and Execution
 

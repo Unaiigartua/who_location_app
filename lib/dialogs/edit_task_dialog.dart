@@ -61,7 +61,7 @@ void showEditTaskDialog(BuildContext context, Task task, String taskId) async {
     // Add status change info if status changed
     if (newStatus != task.status) {
       changeNote +=
-          '\nStatus changed from ${formatStatus(task.status ?? '')} to ${formatStatus(newStatus ?? '')}';
+          '\nStatus changed from ${formatStatus(task.status)} to ${formatStatus(newStatus ?? '')}';
     }
 
     // Add assignee change info if assignee changed

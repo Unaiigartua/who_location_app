@@ -10,7 +10,7 @@ import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:who_location_app/utils/constants.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
-import 'package:who_location_app/widgets/add_task_dialog.dart';
+import 'package:who_location_app/dialogs/add_task_dialog.dart';
 import 'package:who_location_app/utils/helpers.dart';
 
 class MapTab extends StatefulWidget {
@@ -577,8 +577,6 @@ class _MapTabState extends State<MapTab>
       },
     );
   }
-
-
 
   // Modify the _showAddTaskDialog method
   void _showAddTaskDialog(BuildContext context, LatLng? location) {

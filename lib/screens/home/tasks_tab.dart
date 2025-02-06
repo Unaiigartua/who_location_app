@@ -6,7 +6,7 @@ import 'package:who_location_app/providers/task_provider.dart';
 import 'package:who_location_app/utils/constants.dart';
 import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:who_location_app/widgets/add_task_dialog.dart';
+import 'package:who_location_app/dialogs/add_task_dialog.dart';
 import 'package:who_location_app/utils/helpers.dart';
 
 class TasksTab extends StatefulWidget {

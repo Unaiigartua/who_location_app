@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
-import 'package:who_location_app/providers/task_provider.dart';
-import 'package:who_location_app/providers/auth_provider.dart';
-import 'package:who_location_app/utils/constants.dart';
-import 'package:who_location_app/services/task_service.dart';
+import '../providers/task_provider.dart';
+import '../providers/auth_provider.dart';
+import '../utils/constants.dart';
+import '../services/task_service.dart';
 
 class AddTaskDialog extends StatefulWidget {
   final Position? initialPosition;

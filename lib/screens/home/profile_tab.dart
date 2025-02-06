@@ -46,9 +46,46 @@ class AccountTabState extends State<AccountTab>
             icon: const Icon(Icons.logout),
             tooltip: 'Logout',
             onPressed: () async {
-              await context.read<AuthProvider>().logout();
-              if (context.mounted) {
-                context.go('/login');
+              // Show confirmation dialog
+              final bool? confirm = await showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Center(
+                      child: Text(
+                        'Confirm Logout',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    content: const Text('Are you sure you want to log out?'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Cancel'),
+                        onPressed: () => Navigator.of(context).pop(false),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                        ),
+                        child: const Text(
+                          'Confirm',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onPressed: () => Navigator.of(context).pop(true),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              // If user confirms, proceed with logout
+              if (confirm == true) {
+                await context.read<AuthProvider>().logout();
+                if (context.mounted) {
+                  context.go('/login');
+                }
               }
             },
           ),
