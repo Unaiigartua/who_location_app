@@ -10,15 +10,15 @@ class AccountTab extends StatefulWidget {
   const AccountTab({super.key});
 
   @override
-  _AccountTabState createState() => _AccountTabState();
+  AccountTabState createState() => AccountTabState();
 }
 
-class _AccountTabState extends State<AccountTab>
+class AccountTabState extends State<AccountTab>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
-  String _formatRole(String? role) {
+  String formatRole(String? role) {
     if (role == null) return 'Unknown';
 
     // Split role name into words by underscore.
@@ -76,7 +76,7 @@ class _AccountTabState extends State<AccountTab>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Role: ${_formatRole(user?.role)}',
+                        'Role: ${formatRole(user?.role)}',
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
                                   color: Colors.grey[600],

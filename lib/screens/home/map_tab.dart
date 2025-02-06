@@ -578,13 +578,7 @@ class _MapTabState extends State<MapTab>
     );
   }
 
-  IconData _getStatusIcon(String status) {
-    return getStatusIcon(status);
-  }
 
-  Color _getStatusColor(String status) {
-    return getStatusColor(status);
-  }
 
   // Modify the _showAddTaskDialog method
   void _showAddTaskDialog(BuildContext context, LatLng? location) {
@@ -620,5 +614,13 @@ class _MapTabState extends State<MapTab>
 
   String _formatStatus(String status) {
     return formatStatus(status);
+  }
+
+  IconData _getStatusIcon(String status) {
+    return getStatusIcon(status);
+  }
+
+  Color _getStatusColor(String status) {
+    return getStatusColor(status);
   }
 }

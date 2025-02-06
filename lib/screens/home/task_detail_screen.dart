@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:who_location_app/providers/task_provider.dart';
 import 'package:who_location_app/models/task.dart';
-import 'package:intl/intl.dart';
 import 'package:who_location_app/providers/auth_provider.dart';
 import 'package:who_location_app/utils/helpers.dart';
+import 'package:who_location_app/widgets/task_details_widget.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final String taskId;
@@ -41,121 +41,49 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           if (taskProvider.isLoadingDetails) {
             return const Center(child: CircularProgressIndicator());
           }
-
+          // Load task details for the task detail screen in _currentTask
           final task = taskProvider.currentTask;
           if (task == null) {
             return const Center(child: Text('Task not found'));
           }
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildTaskInfo(task),
-                const SizedBox(height: 24),
-                const Text(
-                  'Task History',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TaskInfoWidget(task: task),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Task History',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                _buildTaskLogs(task),
-                const SizedBox(height: 24),
-                _buildActionButton(task),
-              ],
-            ),
+              ),
+              Expanded(
+                child: TaskLogsWidget(
+                  task: task,
+                  onRefresh: () async {
+                    await context
+                        .read<TaskProvider>()
+                        .loadTaskDetails(widget.taskId);
+                  },
+                ),
+              ),
+              const SizedBox(height: 24),
+              _buildActionButton(task),
+            ],
           );
         },
       ),
-    );
-  }
-
-  Widget _buildTaskInfo(Task task) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              task.title,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const Divider(height: 24, thickness: 1.5),
-            Text(
-              task.description,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black54,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Chip(
-                  label: Text(_formatStatus(task.status)),
-                  backgroundColor: _getStatusColor(task.status),
-                  labelStyle: const TextStyle(color: Colors.white),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Created: ${DateFormat.yMMMd().add_Hm().format(task.createdAt)}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.black54,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            ExpansionTile(
-              title: const Text('Details',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              childrenPadding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              expandedCrossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDetailRow('Created by', task.createdByUsername),
-                _buildDetailRow(
-                    'Assigned to', task.assignedToUsername ?? 'Unassigned'),
-                if (task.updatedAt != null)
-                  _buildDetailRow('Updated',
-                      DateFormat.yMMMd().add_Hm().format(task.updatedAt!)),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTaskLogs(Task task) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: task.logs?.length ?? 0,
-      itemBuilder: (context, index) {
-        final log = task.logs![index];
-        return Card(
-          child: ListTile(
-            title: Text(log.note),
-            subtitle: Text(
-              '${log.status} - ${DateFormat.yMMMd().add_Hm().format(log.timestamp)}',
-            ),
-            trailing: Text('By: ${log.modifiedBy}'),
-          ),
-        );
-      },
     );
   }
 
@@ -225,10 +153,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       onPressed: () => _showEditTaskDialog(task),
       child: const Text('Edit Task'),
     );
-  }
-
-  Color _getStatusColor(String status) {
-    return getStatusColor(status);
   }
 
   String _getStatusString(String status) {
@@ -572,34 +496,5 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         );
       },
     );
-  }
-
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('$label: ',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              )),
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Text(value,
-                  style: const TextStyle(
-                    color: Colors.black54,
-                  )),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatStatus(String status) {
-    return formatStatus(status);
   }
 }

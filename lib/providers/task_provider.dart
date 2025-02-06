@@ -15,6 +15,7 @@ class TaskProvider extends ChangeNotifier {
   List<Task> _tasks = [];
   bool _isLoading = false;
   String? _error;
+  // Store the current task details for the task detail screen
   Task? _currentTask;
   bool _isLoadingDetails = false;
   Timer? _refreshTimer;
@@ -141,6 +142,7 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
+  // Load task details for the task detail screen in _currentTask
   Future<void> loadTaskDetails(String taskId) async {
     try {
       _isLoading = true;

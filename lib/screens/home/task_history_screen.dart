@@ -59,10 +59,6 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
     }).toList();
   }
 
-  String _formatStatus(String status) {
-    return formatStatus(status);
-  }
-
   void _onFilterChanged(String value) async {
     // Load new data first
     await context.read<TaskProvider>().loadTasks();
@@ -217,5 +213,9 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
 
   Color _getStatusColor(String status) {
     return getStatusColor(status);
+  }
+
+  String _formatStatus(String status) {
+    return formatStatus(status);
   }
 }

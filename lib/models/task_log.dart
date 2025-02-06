@@ -6,6 +6,8 @@ class TaskLog {
   final int modifiedBy;
   final String note;
   final DateTime timestamp;
+  final String? modifiedByUsername;
+  final String? assignedToUsername;
 
   TaskLog({
     required this.id,
@@ -15,6 +17,8 @@ class TaskLog {
     required this.modifiedBy,
     required this.note,
     required this.timestamp,
+    this.modifiedByUsername,
+    this.assignedToUsername,
   });
 
   factory TaskLog.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,8 @@ class TaskLog {
       modifiedBy: json['modified_by'],
       note: json['note'],
       timestamp: DateTime.parse(json['timestamp']),
+      modifiedByUsername: json['modified_by_username'],
+      assignedToUsername: json['assigned_to_username'],
     );
   }
-} 
+}

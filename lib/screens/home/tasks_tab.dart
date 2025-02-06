@@ -269,10 +269,6 @@ class _TasksTabState extends State<TasksTab>
     );
   }
 
-  Color _getStatusColor(String status) {
-    return getStatusColor(status);
-  }
-
   void _showAddTaskDialog() async {
     if (_currentPosition == null) {
       await _getCurrentLocation();
@@ -290,5 +286,9 @@ class _TasksTabState extends State<TasksTab>
 
   String _formatStatus(String status) {
     return formatStatus(status);
+  }
+
+  Color _getStatusColor(String status) {
+    return getStatusColor(status);
   }
 }
