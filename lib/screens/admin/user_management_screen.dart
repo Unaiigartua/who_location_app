@@ -121,7 +121,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     },
                     itemBuilder: (context) => const [
                       PopupMenuItem(value: 'all', child: Text('All Roles')),
-                      PopupMenuItem(value: 'admin', child: Text('Admin')),
                       PopupMenuItem(
                           value: 'ambulance', child: Text('Ambulance')),
                       PopupMenuItem(
