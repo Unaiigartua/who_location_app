@@ -2,71 +2,206 @@
 
 [![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue.svg)](https://github.com/Unaiigartua/who_location_app)
 
-## Description
+## Overview
 
-"WHO Location Client" is a Flutter application designed for real-time management of reports, tasks, and users. The app connects to a server via WebSocket to receive live updates and offers full functionalities such as creating, editing, and deleting tasks; generating and downloading reports; and managing users with different roles. Additionally, it integrates geolocation to assign tasks based on location and synchronize data with the server.
+WHO Location Client is a Flutter application for real-time management of reports, tasks, and users. It leverages WebSocket connections for live updates and provides comprehensive features including task management, report generation, and user administration with role-based access control. The app integrates geolocation capabilities for location-based task assignment and server synchronization.
 
-## Features
+### Purpose
+This application is designed to streamline emergency response operations by:
+- Facilitating real-time communication between control centers and ambulance teams
+- Optimizing resource allocation through location-based task assignment
+- Providing comprehensive tracking and reporting capabilities
+- Ensuring efficient team coordination during critical situations
 
-- Real-time connection via WebSocket to receive notifications about task updates and other events.
-- Complete user management: registration, login, and role management (e.g., administrator, ambulance).
-- Task management with geolocation support: creation, editing, deletion, and detailed tracking.
-- Generation, synchronization, and downloading of reports with local file management.
-- Integration of Providers for state management along with services that facilitate communication with external APIs.
+### Target Users
+- Emergency Response Teams
+- Ambulance Staff
+- Control Center Operators
+- Administrative Personnel
+- Emergency Service Managers
 
-## App Screens
+## Key Features
 
-The application includes several screens and dialogs that provide a comprehensive user experience:
+### Real-time Communication
+- **WebSocket Integration** - Instant notifications for task updates and system events
+- **Live Status Updates** - Real-time task status synchronization
+- **Push Notifications** - Immediate alerts for critical events and assignments
 
-- **Home Screen**: The main screen displaying a summary of active tasks, user information, and quick access to other functionalities.
-- **Login Screen**: Allows users to enter their credentials and log into their accounts.
-- **Register Screen**: Enables new users to register on the platform.
-- **Admin Register Screen**: A specialized screen for registering administrators, facilitating permission and role management.
-- **User Management Screen**: An interface for managing users where existing users can be listed, edited, or deleted.
-- **Task Detail Screen**: Displays detailed information about a specific task, including its status, location, and description.
-- **Task History Screen**: Provides a history of tasks, allowing filtering and search of past tasks based on various criteria.
-- **Tasks Tab**: A tab that groups tasks by status or other criteria, making access and tracking easier.
-- **Map Tab**: A map view used for selecting and visualizing real-time locations, essential for task assignment based on geolocation.
-- **Profile Tab**: Displays the user's profile information, allowing editing of personal details and settings.
-- **Add Task Dialog**: A pop-up dialog that enables the creation of new tasks, where details such as title, description, location, and ambulance assignment can be entered.
+### User Management
+- **Role-based Access Control** - Different permission levels for administrators and ambulance staff
+- **Secure Authentication** - Complete login and registration system
+- **Profile Management** - User profile customization and settings
+- **Team Management** - Administrative tools for managing user accounts and permissions
 
-## App Logic
+### Task Management
+- **Task Creation & Assignment** - Create and assign tasks to specific ambulance teams
+- **Geolocation Integration** - Location-based task assignment and tracking
+- **Status Tracking** - Real-time monitoring of task progress and completion
+- **Task History** - Comprehensive history of all tasks with filtering capabilities
+- **Priority Management** - Task prioritization and emergency handling
+- **Notes & Updates** - Ability to add notes and updates to ongoing tasks
 
-The application follows a modern architecture based on Providers and services, ensuring efficient data flow and a clear separation of responsibilities:
+### Report System
+- **Report Generation** - Create detailed reports for completed tasks
+- **File Management** - Local storage and synchronization of reports
+- **Download Capabilities** - Export and download reports in multiple formats
+- **Automatic Synchronization** - Server-client file synchronization
+- **Data Analytics** - Basic statistics and data visualization
 
-- **Authentication and User Management**: Utilizes `AuthProvider` for handling authentication, token storage, and session management. It also includes logic to manage unauthorized users.
-- **Task Management**: Task creation, editing, and deletion are managed through `TaskProvider` and `TaskService`, which communicate with the backend using REST APIs and WebSocket for real-time updates.
-- **Reports and Synchronization**: Reports are generated via `ReportApi`, and the app synchronizes local files with the server's list, deleting those that no longer exist on the server.
-- **Real-time Notifications**: `WebSocketService` establishes a connection with the server to receive instant updates on task status, enhancing the app's responsiveness.
-- **State Management and Navigation**: The app uses `Provider` for global state management and `goRouter` for navigation between screens, ensuring a smooth user experience.
+### Location Services
+- **Real-time Tracking** - Live location tracking for ambulance units
+- **Map Integration** - Interactive map interface for task locations
+- **Route Optimization** - Suggested routes for task completion
+- **Geofencing** - Location-based alerts and notifications
+
+### Technical Features
+- **Offline Support** - Basic functionality when offline
+- **State Management** - Efficient data handling using Provider pattern
+- **Error Handling** - Robust error management and recovery
+- **Data Persistence** - Local storage for offline access
+- **Responsive Design** - Adaptable UI for different screen sizes
+
+## Core Components
+
+### Screens
+
+#### Authentication Flow
+Secure user authentication and access control system.
+
+- **Login Screen**
+  - Credential validation & 2FA support
+  - Session management & security features
+  - Password recovery & remember me
+  - Login history & activity tracking
+  
+- **Register Screen**
+  - Smart form validation & verification
+  - Role-based registration flow
+  - Organization onboarding process
+  - Profile setup & customization
+  
+- **Admin Register Screen**
+  - Enhanced security verification
+  - Advanced permission configuration
+  - Organization management tools
+  - Compliance & audit settings
+
+#### Core Interface
+Central hub for daily operations and task management.
+
+- **Home Screen**
+  - Real-time dashboard & metrics
+  - Task overview & quick actions
+  - Team status & notifications
+  - Emergency alerts & weather info
+  
+- **Task Detail Screen**
+  - Task tracking & management
+  - Location & resource monitoring
+  - Communication & documentation
+  - Status updates & attachments
+  
+- **Task History Screen**
+  - Advanced search & filtering
+  - Analytics & reporting tools
+  - Performance tracking
+  - Resource utilization data
+
+#### Navigation System
+Quick access to essential features and information.
+
+- **Tasks Tab**
+  - Smart task organization
+  - Priority management
+  - Team coordination tools
+  - Resource planning features
+  
+- **Map Tab**
+  - Multi-layer mapping system
+  - Real-time tracking & routes
+  - Environmental monitoring
+  - Resource distribution view
+  
+- **Profile Tab**
+  - Account management
+  - Preferences & notifications
+  - Professional records
+  - Security settings
+
+#### Administrative Tools
+System configuration and management interface.
+
+- **User Management**
+  - User administration
+  - Role & permission control
+  - Activity monitoring
+  - Performance evaluation
+  
+- **Report Center**
+  - Custom report generation
+  - Data analysis tools
+  - Compliance tracking
+  - Automated reporting
+
+### Dialogs
+- Add Task Dialog
+- Complete Task Dialog
+- Edit Task Dialog
+- Handle Task Dialog
+- Report Issues Dialog
+- Add Note Dialog
+
+## Architecture
+
+### Core Services
+- **Authentication** - Managed by `AuthProvider`
+- **Task Operations** - Handled through `TaskProvider` and `TaskService`
+- **Report Management** - Implemented via `ReportApi`
+- **Real-time Communication** - Powered by `WebSocketService`
+- **Navigation** - Utilizing `goRouter`
 
 ## Project Structure
 
-The project is organized as follows:
+```
+who_location_app/
+├── lib/
+│   ├── api/                    # API Integration
+│   ├── config/                 # App Configuration
+│   ├── dialogs/                # Modal Dialogs
+│   ├── models/                 # Data Models
+│   ├── providers/              # State Management
+│   ├── screens/                # UI Screens
+│   │   ├── admin/             # Admin Interfaces
+│   │   └── home/              # Main App Screens
+│   ├── services/              # External Services
+│   ├── utils/                 # Helper Utilities
+│   └── widgets/               # Reusable Components
+└── README.md
+```
 
-- **lib/**: Contains all of the source code.
-  - **api/**: Interactions with the server's APIs (e.g., `report_api.dart`, `task_api.dart`).
-  - **config/**: General configurations and routes (e.g., `app_config.dart`, `routes.dart`).
-  - **providers/**: State management and business logic (e.g., `auth_provider.dart`, `task_provider.dart`).
-  - **screens/**: Definitions of the application's screens (e.g., `home_screen.dart`, `report_screen.dart`, etc.).
-  - **services/**: Classes that encapsulate communication with external services (e.g., `websocket_service.dart`, `task_service.dart`, `navigation_service.dart`).
-  - **widgets/**: Reusable UI components (e.g., `custom_button.dart`).
-  - **dialogs/**: Dialog components (e.g., `add_task_dialog.dart`, `edit_task_dialog.dart`).
+## Getting Started
 
-## Installation and Execution
+1. **Clone Repository**
+```bash
+git clone <REPOSITORY_URL>
+cd who_location_app
+```
 
-1. Clone the repository:
-   ```sh
-   git clone <REPOSITORY_URL>
-   cd who_location_app
-   ```
+2. **Install Dependencies**
+```bash
+flutter pub get
+```
 
-2. Install dependencies:
-   ```sh
-   flutter pub get
-   ```
+3. **Launch Application**
+```bash
+flutter run
+```
 
-3. Run the application:
-   ```sh
-   flutter run
-   ```
+## Technical Requirements
+
+- Flutter SDK
+- Dart SDK
+- Internet connection for WebSocket functionality
+- Location services enabled for geolocation features
+
+
